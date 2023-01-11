@@ -13,7 +13,7 @@ public class Sjavac {
     private static final String BLANK_OR_COMMENT = "^//.*$|\\s*";
     private static final String END_OF_LINE_MODIFIERS = "^.*(?:;|\\{)$"; //TODO: maybe unnecessary
     private static final String GENERAL_VAR_LINE = "^\\s*(?:(?:int|double|String|boolean|char)(?:\\s*" +
-            "[a-zA-z_\\d]+\\s*(?:=)?,?)+|[a-zA-z_\\d]\\s*=\\s*.*?);$";
+            "[a-zA-z_\\d]+\\s*=?,?)+|[a-zA-z_\\d]\\s*=\\s*.*?);$";
     private static final Pattern generalVarLineChecker = Pattern.compile(GENERAL_VAR_LINE);
     private static final Pattern endOfLineChecker = Pattern.compile(END_OF_LINE_MODIFIERS);
     private static final Pattern blankOrCommentRegex = Pattern.compile(BLANK_OR_COMMENT);
