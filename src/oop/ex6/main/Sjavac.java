@@ -15,7 +15,8 @@ public class Sjavac {
     private static final String INVALID_FILE_ERR_MSG = "Invalid file name";
     private static final String BLANK_OR_COMMENT = "^//.*$|\\s*";
     private static final String END_OF_LINE_MODIFIERS = "^.*[;{]$"; //TODO: maybe unnecessary
-    private static final String VAR_INITIALIZE_LINE = "^\\s*(?:int|double|String|boolean|char).*;$";
+    private static final String VAR_INITIALIZE_LINE = "^\\s*(?:int|double|String|boolean|char)\\s+.*;$";
+    //TODO: add multiple assignments
     private static final String VAR_ASSIGMENT_LINE = "^\\s*[a-zA-z_\\d]\\s*=\\s*.*?;$";
     private static final String METHOD_LINE = "^\\s*void.*[{]$";
 
@@ -29,6 +30,7 @@ public class Sjavac {
     public static void main(String[] args) {
         String line;
         Matcher matcher;
+        int scope = 0;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(args[0]))){
             while ((line = bufferedReader.readLine())!= null){
                 matcher =  blankOrCommentRegex.matcher(line);
