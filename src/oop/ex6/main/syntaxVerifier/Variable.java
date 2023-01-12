@@ -2,7 +2,6 @@ package oop.ex6.main.syntaxVerifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,8 +61,10 @@ public class Variable {
         }
     }
 
-    private static final String VAR_WITH_INITIALIZE = "^(([a-zA-Z]+\\w*)|(_\\w+))\\s*=\\s*(.*)\\s*$";
-    private static final String VAR_WITHOUT_INITIALIZE = "^(([a-zA-Z]+\\w*)|(_\\w+))\\s*$";
+    private static final String VAR_WITH_INITIALIZE = "^([a-zA-Z]+\\w*|_\\w+)\\s*=\\s*(.*)\\s*$";
+    //TODO: capturing group has been refined
+    private static final String VAR_WITHOUT_INITIALIZE = "^([a-zA-Z]+\\w*|_\\w+)\\s*;?\\s*$";
+    //TODO: updated now supports ; in the end of a sentence and capturing groups has been refined
     private static final String END = "^.*;$";
 
     //pattern declaration:
@@ -73,7 +74,7 @@ public class Variable {
 
     //other variables:
     private static final ArrayList<HashMap<String, VarInfo>> listOfArgs= new ArrayList<>();
-    private static final HashMap<String, VarInfo> problem= new HashMap<>();
+    private static final HashMap<String, VarInfo> problem = new HashMap<>();
 
     /**
      * checks that a line that initializes a variable is legal
@@ -115,12 +116,23 @@ public class Variable {
         return true;
     }
 
+    private static void insertVarWithoutValue(String varName, int scope, String type) {
+        //TODO: implement
+    }
+
+    private static void insertVarWithValue(String varName, String value, int scope, String type) {
+        //TODO: implement
+
+    }
+
     public static boolean assignVar(String line, int scope){
 
+        return true;
     }
 
     public static boolean checkScope(){
 
+        return true;
     }
 
     /**
@@ -151,6 +163,7 @@ public class Variable {
 
     public static boolean getType(){
 
+        return true;
     }
 
 
