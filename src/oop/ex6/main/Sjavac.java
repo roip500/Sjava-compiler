@@ -1,5 +1,7 @@
 package oop.ex6.main;
 
+import oop.ex6.main.syntaxVerifier.Variable;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -48,7 +50,7 @@ public class Sjavac {
                 }
                 matcher = varInitializeRegex.matcher(line);
                 if(matcher.matches()){
-                    //TODO: call variable class
+                    Variable.initializeVar(line, 0);
                     continue;
                 }
                 matcher = varAssignedRegex.matcher(line);
