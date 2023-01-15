@@ -10,16 +10,12 @@ import java.util.regex.Pattern;
 
 public class Sjavac {
 
-    //    private static final String VAR_INITIALIZE_LINE = "^\\s*(?:int|double|String|boolean|char)\\s*" +
-    //                                                      "\\w+\\s*=?,?+;$";
-
     //regex string pattern:
     private static final String INVALID_FILE_ERR_MSG = "Invalid file name";
     private static final String BLANK_OR_COMMENT = "^//.*$|\\s*";
     private static final String END_OF_LINE_MODIFIERS = "^.*[;{]$"; //TODO: maybe unnecessary
-    private static final String VAR_INITIALIZE_LINE = "^\\s*(?:int|double|String|boolean|char)\\s+.*;$";
-    //TODO: add multiple assignments
-    private static final String VAR_ASSIGMENT_LINE = "^\\s*[a-zA-z_\\d]\\s*=\\s*.*?;$";
+    private static final String VAR_INITIALIZE_LINE = "^\\s*(final)?\\s*(?:int|double|String|boolean|char)\\s+.*;$";
+    private static final String VAR_ASSIGMENT_LINE = "^\\s*[a-zA-z_\\d]\\s*=\\s*.*?;$";//TODO: add multiple assignments
     private static final String METHOD_LINE = "^\\s*void.*[{]$";
 
     //pattern declaration:
@@ -35,6 +31,7 @@ public class Sjavac {
         int scope = 0;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(args[0]))){
             while ((line = bufferedReader.readLine())!= null){
+                line = line.trim();
                 matcher =  blankOrCommentRegex.matcher(line);
                 if(matcher.matches()) continue;
                 matcher = endOfLineRegex.matcher(line);
@@ -50,12 +47,12 @@ public class Sjavac {
                 }
                 matcher = varInitializeRegex.matcher(line);
                 if(matcher.matches()){
-                    Variable.initializeVar(line, 0);
+                    Variable.initializeVar(line, scope, matcher.group(1) != null);
                     continue;
                 }
                 matcher = varAssignedRegex.matcher(line);
                 if(matcher.matches()){
-                    //TODO: call variable class
+                    Variable.assignVar(line, scope);
                     continue;
                 }
                 System.out.println();
