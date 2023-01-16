@@ -84,7 +84,7 @@ public class Variable {
             "[-+]?\\d*[.]\\d+|[-+]?\\d+[.]\\d*");
     private static final Pattern VALUE_IS_DOUBLE_REGEX = Pattern.compile("[-+]?\\d*[.]\\d+|" +
             "[-+]?\\d+[.]\\d*");
-    private static final Pattern LEGIT_NAME_REGEX = Pattern.compile("^([a-zA-Z]+\\w*|_\\w+)\\s*$");
+    private static final Pattern LEGIT_NAME_REGEX = Pattern.compile("^(?:[a-zA-Z]+\\w*|_\\w+)\\s*$");
 
     //other variables:
     private static final ArrayList<HashMap<String, VarInfo>> listOfArgs= new ArrayList<>();
@@ -109,7 +109,7 @@ public class Variable {
             return false;
         }
         Matcher matcher;
-        for(int i=0; i < allGroups.length ;i++){
+        for(int i = 0; i < allGroups.length ;i++){
             String group = allGroups[i].trim();
             matcher = END_REGEX.matcher(group);
             if(i < allGroups.length -1 && matcher.matches()) {
@@ -138,7 +138,7 @@ public class Variable {
                 listOfArgs.get(scope).put(matcher.group(1), info);
                 continue;
             }
-            //TODO: exceptionn doesn't match any regex
+            //TODO: exception doesn't match any regex
             return false;
         }
         return true;
@@ -205,7 +205,7 @@ public class Variable {
         if (varInfo != null && varInfo.getType().equals(type) && varInfo.isInitialized()) {
             return true;
         }
-        //TODO: exception object doesnt exist
+        //TODO: exception object doesn't exist
         return false;
     }
 
@@ -231,7 +231,7 @@ public class Variable {
                    }
                }
                if (varInfo == null) {
-                   //TODO: exception object doesnt exist
+                   //TODO: exception object doesn't exist
                    return false;
                }
                if (varInfo.isFinal()) {
