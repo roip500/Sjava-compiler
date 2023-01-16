@@ -8,58 +8,58 @@ import java.util.regex.Pattern;
 
 public class Variable {
 
-    /**
-     * class that holds the information on the variable
-     */
-    private static class VarInfo{
-
-        private final String type;
-        private boolean initialized;
-        private final boolean isFinal;
-
-
-        /**
-         * constructor for VarInfo
-         * @param type - assigned type value
-         * @param initialized - assigned boolean value
-         */
-        public VarInfo(String type, boolean initialized, boolean isFinal){
-            this.type = type;
-            this.initialized = initialized;
-            this.isFinal = isFinal;
-        }
-
-        /**
-         * returns the type
-         * @return type value
-         */
-        public String getType() {
-            return type;
-        }
-
-        /**
-         * returns the initialized argument value
-         * @return boolean
-         */
-        public boolean isInitialized() {
-            return initialized;
-        }
-
-        /**
-         * sets the initialized argument to true
-         */
-        public void setInitialized(){
-            initialized = true;
-        }
-
-        /**
-         * returns if the variable is final
-         * @return boolean
-         */
-        public boolean isFinal() {
-            return isFinal;
-        }
-    }
+//    /**
+//     * class that holds the information on the variable
+//     */
+//    private static class VarInfo{
+//
+//        private final String type;
+//        private boolean initialized;
+//        private final boolean isFinal;
+//
+//
+//        /**
+//         * constructor for VarInfo
+//         * @param type - assigned type value
+//         * @param initialized - assigned boolean value
+//         */
+//        public VarInfo(String type, boolean initialized, boolean isFinal){
+//            this.type = type;
+//            this.initialized = initialized;
+//            this.isFinal = isFinal;
+//        }
+//
+//        /**
+//         * returns the type
+//         * @return type value
+//         */
+//        public String getType() {
+//            return type;
+//        }
+//
+//        /**
+//         * returns the initialized argument value
+//         * @return boolean
+//         */
+//        public boolean isInitialized() {
+//            return initialized;
+//        }
+//
+//        /**
+//         * sets the initialized argument to true
+//         */
+//        public void setInitialized(){
+//            initialized = true;
+//        }
+//
+//        /**
+//         * returns if the variable is final
+//         * @return boolean
+//         */
+//        public boolean isFinal() {
+//            return isFinal;
+//        }
+//    }
 
     // Types allowed:
     private static final String INT = "int";
@@ -78,6 +78,7 @@ public class Variable {
     private static final Pattern VAR_WITHOUT_INITIALIZE_REGEX = Pattern.compile(VAR_WITHOUT_INITIALIZE);
     private static final Pattern END_REGEX = Pattern.compile("^.*;$");
     private static final Pattern VALUE_IS_INT_REGEX = Pattern.compile("[-+]?\\d+");
+    //TODO:maybe add ^ and $ at the beginning and end of the regexes
     private static final Pattern VALUE_IS_STRING_REGEX = Pattern.compile("\".*\"");
     private static final Pattern VALUE_IS_CHAR_REGEX = Pattern.compile("'.'");
     private static final Pattern VALUE_IS_BOOLEAN_REGEX = Pattern.compile("true|false|[-+]?\\d+|" +

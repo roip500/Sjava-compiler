@@ -1,5 +1,6 @@
 package oop.ex6.main;
 
+import oop.ex6.main.syntaxVerifier.Method;
 import oop.ex6.main.syntaxVerifier.Variable;
 
 import java.io.BufferedReader;
@@ -98,6 +99,7 @@ public class Sjavac {
                 if (matcher.matches()) {
                     openedScopes++;
                     //TODO: call method class
+                    Method.addMethod(line);
                     continue;
                 }
                 matcher = varInitializeRegex.matcher(line);
