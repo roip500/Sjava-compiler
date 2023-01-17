@@ -27,7 +27,7 @@ public class Sjavac {
     private static final Pattern blankOrCommentRegex = Pattern.compile(BLANK_OR_COMMENT);
     private static final Pattern varAssignedRegex = Pattern.compile(VAR_ASSIGNMENT_LINE);
     private static final Pattern methodRegex = Pattern.compile(METHOD_LINE);
-    private static final Pattern endOfScopeRegex = Pattern.compile("^.*}$");
+    private static final Pattern endOfScopeRegex = Pattern.compile("^\\s*}\\s*$");
     private static final Pattern ifWhileRegex = Pattern.compile("^\\s*(?:if|while).*[{]$");
 
     public static void main(String[] args) {
@@ -40,29 +40,12 @@ public class Sjavac {
                 line = line.trim();
                 matcher = blankOrCommentRegex.matcher(line);
                 if (matcher.matches()) continue;
-                matcher = endOfLineRegex.matcher(line);
-                if (!matcher.matches()) {
-                    //TODO: check if necessary and if so throw an error
-                    System.out.println(1);
-                    return;
-                }
                 matcher = methodRegex.matcher(line);
                 if (matcher.matches()) {
                     //TODO: call method class
                     continue;
                 }
-                matcher = varInitializeRegex.matcher(line);
-                //TODO: possibly redundant because in scope 0 it is added in the initial reading
-                if (matcher.matches()) {
-                    Variable.initializeVar(line, scope, matcher.group(1) != null);
-                    continue;
-                }
-                matcher = varAssignedRegex.matcher(line);
-                //TODO: possibly redundant because in scope 0 it is handled in the initial reading
-                if (matcher.matches()) {
-                    Variable.assignVar(line, scope);
-                    continue;
-                }
+
                 System.out.println();
                 return; //TODO: finish
             }
@@ -80,6 +63,12 @@ public class Sjavac {
                 line = line.trim();
                 matcher = blankOrCommentRegex.matcher(line);
                 if (matcher.matches()) continue;
+                matcher = endOfLineRegex.matcher(line);
+                if (!matcher.matches()) {
+                    //TODO: throw an error
+                    System.out.println(1);
+                    return false;
+                }
                 matcher = endOfScopeRegex.matcher(line);
                 if(matcher.matches()){
                     openedScopes--;
@@ -98,7 +87,6 @@ public class Sjavac {
                 matcher = methodRegex.matcher(line);
                 if (matcher.matches()) {
                     openedScopes++;
-                    //TODO: call method class
                     Method.addMethod(line);
                     continue;
                 }
@@ -110,7 +98,10 @@ public class Sjavac {
                 matcher = varAssignedRegex.matcher(line);
                 if (matcher.matches() && openedScopes == 0) {
                     if(!Variable.assignVar(line, 0)) return false;
+                    continue;
                 }
+                //TODO: throw a general line error
+                return false;
             }
         }
         catch (IOException e) {

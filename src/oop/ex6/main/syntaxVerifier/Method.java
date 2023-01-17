@@ -15,30 +15,32 @@ public class Method {
     private static final String CHAR = "char";
     private static final String FINAL = "final";
 
-    private static final Pattern METHOD_DECLARATION_REGEX = Pattern.compile("^\\s*void\\s*([a-zA-z]+" +
-            "\\w*)\\s*([(](?:\\s*(?:final\\s*)?\\w+\\s+\\w+,?)*[)])\\s*[{]$");
+    private static final Pattern METHOD_DECLARATION_REGEX = Pattern.compile("^\\s*void\\s+([a-zA-z]+" +
+            "\\w*)\\s+([(](?:\\s*(?:final\\s*)?\\w+\\s+\\w+,?)*[)])\\s*[{]$");
     private static final Pattern REMOVE_PARENTHESES_FROM_VAR_LIST = Pattern.compile("^[(](.*)[)]$");
-    private static final Pattern ARG_DEC_LINE_REGEX = Pattern.compile("\\s*(final)?\\s*(int|boolean|" +
-            "String|double|char)\\s*([a-zA-Z]+\\w*|_\\w+)");
+    private static final Pattern ARG_DEC_LINE_REGEX = Pattern.compile("\\s*(final)?\\s+(int|boolean|" +
+            "String|double|char)\\s+([a-zA-Z]+\\w*|_\\w+)\\s*");
     private static final HashMap<String, HashMap<String,VarInfo>> methods = new HashMap<>();
 
     public static boolean addMethod(String line){
-        String newLine = line.trim();
+        line = line.trim();
         Matcher matcher = METHOD_DECLARATION_REGEX.matcher(line);
         if(!matcher.matches()){
             //TODO: throw exception invalid method declaration
             return false;
         }
         String methodName = matcher.group(1);
+        if(methods.containsKey(methodName)){
+            //TODO: throw 2 same named methods error
+            return false;
+        }
         String argListWithParentheses = matcher.group(2);
         matcher = REMOVE_PARENTHESES_FROM_VAR_LIST.matcher(argListWithParentheses);
         if(matcher.group(1) == null){
            methods.put(methodName, null);
            return true;
         }
-        String argList = matcher.group(1);
-        if(!parseArgList(methodName, argList)) return false;
-        return true;
+        return parseArgList(methodName, matcher.group(1));
     }
 
     private static boolean parseArgList(String methodName, String argList) {
@@ -46,10 +48,6 @@ public class Method {
         argList = argList.trim();
         Matcher matcher;
         String[] allGroups = argList.split(",");
-        if(allGroups.length == 0){
-            //TODO: throw invalid arg list error
-            return false;
-        }
         for(String group : allGroups) {
             group = group.trim();
             matcher = ARG_DEC_LINE_REGEX.matcher(group);
