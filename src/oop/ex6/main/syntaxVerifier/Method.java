@@ -1,5 +1,6 @@
 package oop.ex6.main.syntaxVerifier;
 
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -61,4 +62,11 @@ public class Method {
         methods.put(methodName,argListAndTypeInfo);
         return true;
     }
+
+    public static boolean runMethod(String methodName, String argList, BufferedReader bufferedReader){
+
+
+    }
+
+
 }
