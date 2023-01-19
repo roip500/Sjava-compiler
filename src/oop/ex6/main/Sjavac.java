@@ -2,6 +2,7 @@ package oop.ex6.main;
 
 import oop.ex6.main.syntaxVerifier.Method;
 import oop.ex6.main.syntaxVerifier.Variable;
+import oop.ex6.main.syntaxVerifier.WhileIf;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -177,12 +178,14 @@ public class Sjavac {
             if(!startMethod(line)) {
                 return FAILED;
             }
+            return SUCCESS;
         }
         matcher = ifWhileRegex.matcher(line);
         if(matcher.matches()){
             scopeNum++;
             //TODO: while if class
-
+            if(!WhileIf.checkIfWhile(line,scopeNum)) return FAILED;
+            return SUCCESS;
         }
         matcher = returnStatementRegex.matcher(line);
         if(matcher.matches()){
