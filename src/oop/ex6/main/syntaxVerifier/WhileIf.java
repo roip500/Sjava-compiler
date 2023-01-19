@@ -28,6 +28,10 @@ public class WhileIf {
                 // TODO: throw non existing var error
                 return false;
             }
+            if(!info.isInitialized()){
+                // TODO: throw non initialized var error
+                return false;
+            }
             String varType = info.getType();
             if(varType.equals(CHAR) || varType.equals(STRING)){
                 // TODO: throw invalid type for condition error
