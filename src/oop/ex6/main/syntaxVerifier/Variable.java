@@ -52,7 +52,7 @@ public class Variable {
         String type = splitedLine[0];
         String[] allGroups = splitedLine[1].split(",");
         if(allGroups.length == 0){
-            //TODO: throw exception no variable declared
+            // TODO: throw exception no variable declared
             return false;
         }
         Matcher matcher;
@@ -60,32 +60,32 @@ public class Variable {
             String group = allGroups[i].trim();
             matcher = END_REGEX.matcher(group);
             if(i < allGroups.length -1 && matcher.matches()) {
-                //TODO: throw exception ; in middle of row
+                // TODO: throw exception ; in middle of row
                 return false;
             }
             matcher = VAR_WITH_INITIALIZE_REGEX.matcher(group);
             if(matcher.matches()){
                 if(!listOfArgs.get(scope).containsKey(matcher.group(1))){
                     if(valueLegit(matcher.group(2), scope, type)){
-                        var info = new VarInfo(type, true, isFinal);
+                        var info = new VarInfo(matcher.group(1), type, true, isFinal);
                         listOfArgs.get(scope).put(matcher.group(1), info);
                         continue;
                     } else{
-                        //TODO: throw exception value not ok
+                        // TODO: throw exception value not ok
                         return false;
                     }
                 }else{
-                    //TODO: throw exception exists already in my scope
+                    // TODO: throw exception exists already in my scope
                     return false;
                 }
             }
             matcher = VAR_WITHOUT_INITIALIZE_REGEX.matcher(group);
             if(matcher.matches()) {
-                var info = new VarInfo(type, false, isFinal);
+                var info = new VarInfo(matcher.group(1), type,false, isFinal);
                 listOfArgs.get(scope).put(matcher.group(1), info);
                 continue;
             }
-            //TODO: exception doesn't match any regex
+            // TODO: exception doesn't match any regex
             return false;
         }
         return true;
@@ -113,6 +113,10 @@ public class Variable {
                 if(matcher.matches()){
                     return true;
                 }
+                matcher = VALUE_IS_INT_REGEX.matcher(value);
+                if(matcher.matches()){
+                    return true;
+                }
                 break;
             }
             case (CHAR): {
@@ -124,6 +128,14 @@ public class Variable {
             }
             case (BOOLEAN):{
                 matcher = VALUE_IS_BOOLEAN_REGEX.matcher(value);
+                if(matcher.matches()){
+                    return true;
+                }
+                matcher = VALUE_IS_DOUBLE_REGEX.matcher(value);
+                if(matcher.matches()){
+                    return true;
+                }
+                matcher = VALUE_IS_INT_REGEX.matcher(value);
                 if(matcher.matches()){
                     return true;
                 }
@@ -223,7 +235,7 @@ public class Variable {
      * @param name - String
      * @return varInfo object
      */
-    public static VarInfo getType(String name){
+    public static VarInfo getInfo(String name){
         Matcher matcher = LEGIT_NAME_REGEX.matcher(name);
         if(matcher.matches()){
             for (int i=listOfArgs.size()-1; i>-1; i--){
@@ -233,6 +245,16 @@ public class Variable {
             }
         }
         return null;
+    }
+
+    /**
+     * adds a new variable to the scope in the list
+     * @param name - String
+     * @param info - VarInfo type object
+     * @param scope - integer
+     */
+    public static void addVariable(String name, VarInfo info, int scope){
+        listOfArgs.get(scope).put(name, info);
     }
 
 }

@@ -4,7 +4,7 @@ public class VarInfo {
     /**
      * class that holds the information on the variable
      */
-
+    private final String name;
     private final String type;
     private boolean initialized;
     private final boolean isFinal;
@@ -16,7 +16,8 @@ public class VarInfo {
      * @param type        - assigned type value
      * @param initialized - assigned boolean value
      */
-    public VarInfo(String type, boolean initialized, boolean isFinal) {
+    public VarInfo(String name, String type, boolean initialized, boolean isFinal) {
+        this.name = name;
         this.type = type;
         this.initialized = initialized;
         this.isFinal = isFinal;
@@ -54,6 +55,14 @@ public class VarInfo {
      */
     public boolean isFinal() {
         return isFinal;
+    }
+
+    /**
+     * returns the name of the variable
+     * @return String
+     */
+    public String getName() {
+        return name;
     }
 }
 
