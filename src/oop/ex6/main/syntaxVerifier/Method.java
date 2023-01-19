@@ -10,6 +10,12 @@ public class Method {
     //global:
     private static final int SUCCESS = 0;
     private static final int FAILED = 1;
+    private static final String INT = "int";
+    private static final String DOUBLE = "double";
+    private static final String STRING = "String";
+    private static final String BOOLEAN = "boolean";
+    private static final String CHAR = "char";
+
 
     //regex:
     private static final Pattern METHOD_DECLARATION_REGEX = Pattern.compile("^\\s*void\\s+([a-zA-Z]+" +
@@ -18,7 +24,7 @@ public class Method {
     private static final Pattern ARG_DEC_LINE_REGEX = Pattern.compile("\\s*(final)?\\s+(int|boolean|" +
             "String|double|char)\\s+([a-zA-Z]+\\w*|_\\w+)\\s*");
     private static final Pattern VARIABLES_PASSED_TO_METHOD_REGEX = Pattern.compile(
-            "\\s*([a-zA-Z]\\w*)\\s*[(]((?:\\s*\\w+\\s*,?))[)]\\s;$");
+            "\\s*([a-zA-Z]\\w*)\\s*[(]((?:\\s*\\w+\\s*,?)*)[)]\\s;$");
 
     //data-base:
     private static final HashMap<String, ArrayList<VarInfo>> methods = new HashMap<>();
@@ -131,15 +137,42 @@ public class Method {
         for(int i=0; i<size;i++){
             String arg = args[i].trim();
             VarInfo info = Variable.getInfo(arg);
-            if(info != null){
-
+            if(info != null && checkInfoMatch(info,lstOfArgs.get(i))){
+                // TODO: exception - variable doesn't match the required info
+                return FAILED;
             }
             else{
-
+                if(!Variable.checkIfValueIsTheRightType(arg, lstOfArgs.get(i).getType())){
+                    // TODO: exception - value doesn't match type
+                    return FAILED;
+                }
             }
-
         }
+        return SUCCESS;
+    }
 
-
+    /**
+     * this function checks if the parameter given in a function call matches the parameter in the argument list
+     * @param callInfo-VarInfo of called parameter
+     * @param argInfo- VarInfo of the argument
+     * @return true if matches and false if not
+     */
+    private static boolean checkInfoMatch(VarInfo callInfo, VarInfo argInfo){
+        if(!callInfo.isInitialized()) return false;
+        if(callInfo.isFinal() && !argInfo.isFinal()) return false;
+        String destType = argInfo.getType();
+        switch (callInfo.getType()){
+            case INT:
+                if(!(destType.equals(INT)||destType.equals(DOUBLE)||destType.equals(BOOLEAN))) return false;
+            case DOUBLE:
+                if(!(destType.equals(DOUBLE)||destType.equals(BOOLEAN))) return false;
+            case BOOLEAN:
+                if(!(destType.equals(BOOLEAN))) return false;
+            case STRING:
+                if(!(destType.equals(STRING))) return false;
+            case CHAR:
+                if(!(destType.equals(CHAR))) return false;
+        }
+        return true;
     }
 }

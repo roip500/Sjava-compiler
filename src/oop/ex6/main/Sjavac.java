@@ -3,7 +3,6 @@ package oop.ex6.main;
 import oop.ex6.main.syntaxVerifier.Method;
 import oop.ex6.main.syntaxVerifier.Variable;
 
-import javax.print.DocFlavor;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -57,7 +56,7 @@ public class Sjavac {
                 }
             }
             if(scopeNum != 0){
-                //TODO: exeption - didn't clode all scopes
+                //TODO: exception - didn't close all scopes
                 return FAILED;
             }
         }
@@ -90,17 +89,14 @@ public class Sjavac {
         return SUCCESS;
     }
 
-
-
     /**
      * function checks if the line is blank or a comment
      * @param line - String
-     * @return true if true, flase if false
+     * @return true if true, false if false
      */
     private boolean checksBlankOrCommentLine(String line){
         matcher = blankOrCommentRegex.matcher(line);
-        if (matcher.matches()) return true;
-        return false;
+        return matcher.matches();
     }
 
     /**
@@ -213,10 +209,7 @@ public class Sjavac {
     }
 
     private boolean startMethod(String line){
-        if(!Method.runMethod(line, scopeNum)){
-            return false;
-        }
-        return true;
+        return Method.runMethod(line, scopeNum);
     }
 
 

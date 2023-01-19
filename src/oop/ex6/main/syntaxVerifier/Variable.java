@@ -35,6 +35,7 @@ public class Variable {
 
     //other variables:
     private static final ArrayList<HashMap<String, VarInfo>> listOfArgs= new ArrayList<>();
+    private static Matcher matcher;
 
     /**
      * checks that a line that initializes a variable is legal
@@ -99,55 +100,8 @@ public class Variable {
      * @return true if the value fits the type, false if not
      */
     private static boolean valueLegit(String value, int scope, String type) {
-        Matcher matcher;
-        switch (type){
-            case (INT): {
-                matcher = VALUE_IS_INT_REGEX.matcher(value);
-                if(matcher.matches()){
-                    return true;
-                }
-                break;
-            }
-            case (DOUBLE):{
-                matcher = VALUE_IS_DOUBLE_REGEX.matcher(value);
-                if(matcher.matches()){
-                    return true;
-                }
-                matcher = VALUE_IS_INT_REGEX.matcher(value);
-                if(matcher.matches()){
-                    return true;
-                }
-                break;
-            }
-            case (CHAR): {
-                matcher = VALUE_IS_CHAR_REGEX.matcher(value);
-                if(matcher.matches()){
-                    return true;
-                }
-                break;
-            }
-            case (BOOLEAN):{
-                matcher = VALUE_IS_BOOLEAN_REGEX.matcher(value);
-                if(matcher.matches()){
-                    return true;
-                }
-                matcher = VALUE_IS_DOUBLE_REGEX.matcher(value);
-                if(matcher.matches()){
-                    return true;
-                }
-                matcher = VALUE_IS_INT_REGEX.matcher(value);
-                if(matcher.matches()){
-                    return true;
-                }
-                break;
-            }
-            case (STRING):{
-                matcher = VALUE_IS_STRING_REGEX.matcher(value);
-                if(matcher.matches()){
-                    return true;
-                }
-                break;
-            }
+        if(Variable.checkIfValueIsTheRightType(value, type)){
+            return true;
         }
         matcher = LEGIT_NAME_REGEX.matcher(value);
         if(!matcher.matches()){
@@ -165,6 +119,65 @@ public class Variable {
             return true;
         }
         //TODO: exception object doesn't exist
+        return false;
+    }
+
+    /**
+     * checks if the value passed is the type required
+     * @param value - String
+     * @param type - String
+     * @return true if yes, false if no
+     */
+    public static boolean checkIfValueIsTheRightType(String value, String type){
+        switch (type) {
+            case (INT): {
+                matcher = VALUE_IS_INT_REGEX.matcher(value);
+                if (matcher.matches()) {
+                    return true;
+                }
+                break;
+            }
+            case (DOUBLE): {
+                matcher = VALUE_IS_DOUBLE_REGEX.matcher(value);
+                if (matcher.matches()) {
+                    return true;
+                }
+                matcher = VALUE_IS_INT_REGEX.matcher(value);
+                if (matcher.matches()) {
+                    return true;
+                }
+                break;
+            }
+            case (CHAR): {
+                matcher = VALUE_IS_CHAR_REGEX.matcher(value);
+                if (matcher.matches()) {
+                    return true;
+                }
+                break;
+            }
+            case (BOOLEAN): {
+                matcher = VALUE_IS_BOOLEAN_REGEX.matcher(value);
+                if (matcher.matches()) {
+                    return true;
+                }
+                matcher = VALUE_IS_DOUBLE_REGEX.matcher(value);
+                if (matcher.matches()) {
+                    return true;
+                }
+                matcher = VALUE_IS_INT_REGEX.matcher(value);
+                if (matcher.matches()) {
+                    return true;
+                }
+                break;
+            }
+            case (STRING): {
+                matcher = VALUE_IS_STRING_REGEX.matcher(value);
+                if (matcher.matches()) {
+                    return true;
+                }
+                break;
+            }
+        }
         return false;
     }
 
