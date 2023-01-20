@@ -66,8 +66,9 @@ public class Variable{
             }
             matcher = VAR_WITH_INITIALIZE_REGEX.matcher(group);
             if(matcher.matches()){
+                String value = matcher.group(2).trim();
                 if(!listOfArgs.get(scope).containsKey(matcher.group(1))){
-                    if(valueLegit(matcher.group(2), scope, type)){
+                    if(valueLegit(value, scope, type)){
                         var info = new VarInfo(matcher.group(1), type, true, isFinal);
                         listOfArgs.get(scope).put(matcher.group(1), info);
                         continue;

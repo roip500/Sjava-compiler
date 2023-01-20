@@ -1,0 +1,4 @@
+int a=5;
+
+//bug -the value passed inculeds the ";"
+//tried to fix it but didn't work

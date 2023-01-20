@@ -53,7 +53,7 @@ public class Sjavac {
             // TODO - exception file was not given
             System.out.println(ERROR);
         }
-        int result = this.initialRead(args[0]);
+        int result = this.firstRead(args[0]);
         if (result != SUCCESS){
             System.out.println(result);
         }
@@ -68,8 +68,9 @@ public class Sjavac {
      * @param fileName - String
      * @return 0 if all ok, 1 if there is a mistake, 2 error in opening code
      */
-    private int initialRead(String fileName) {
+    private int firstRead(String fileName) {
         String line;
+        Variable.addScope(scopeNum);
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName))) {
             while ((line = bufferedReader.readLine()) != null){
                 int result = checkLineFirstRead(line);
