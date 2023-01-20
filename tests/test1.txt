@@ -1,0 +1,11 @@
+void foo(int param1){
+    int a = 5;
+    if (param1){
+           int a = 20;
+           boolean param1 = true;
+           while (param1) {
+                double a = 2.5;
+           }
+    }
+    return;
+}

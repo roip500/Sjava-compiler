@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Variable {
+public class Variable{
 
     // Types allowed:
     private static final String INT = "int";

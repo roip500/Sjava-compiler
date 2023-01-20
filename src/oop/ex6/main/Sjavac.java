@@ -37,10 +37,31 @@ public class Sjavac {
     private static final Pattern ifWhileRegex = Pattern.compile("^\\s*(?:if|while).*[{]$");
     private static final Pattern returnStatementRegex = Pattern.compile("^\\s*return\\s*;$");
 
-
+    // class arguments:
     private int scopeNum = 0;
     private Matcher matcher;
     private String previousLine;
+    private int numOfInnerWhileOrIf = 0;
+
+
+    /**
+     * main func - checks the sJava file and print to the screen the result
+     * @param args - String
+     */
+    public void checkCode(String[] args){
+        if(args.length == 0){
+            // TODO - exception file was not given
+            System.out.println(ERROR);
+        }
+        int result = this.initialRead(args[0]);
+        if (result != SUCCESS){
+            System.out.println(result);
+        }
+        else{
+            result = this.secondRead(args[0]);
+            System.out.println(result);
+        }
+    }
 
     /**
      * reads the file a first time - checks global variables and methods names
@@ -91,32 +112,11 @@ public class Sjavac {
     }
 
     /**
-     * function checks if the line is blank or a comment
+     * performs the checks of the code in the first round
+     * checks: empty/comments, global variable, end of line and scopes
      * @param line - String
-     * @return true if true, false if false
+     * @return SUCCESS if written properly, FAILED if not
      */
-    private boolean checksBlankOrCommentLine(String line){
-        matcher = blankOrCommentRegex.matcher(line);
-        return matcher.matches();
-    }
-
-    /**
-     * checks if the line is a statement that initializes a variable or assigns a variable
-     * @param line string
-     * @return true if succeeded, false if no
-     */
-    private boolean variableCheck(String line){
-        matcher = varInitializeRegex.matcher(line);
-        if (matcher.matches()) {
-            return Variable.initializeVar(line, scopeNum, matcher.group(1) != null);
-        }
-        matcher = varAssignedRegex.matcher(line);
-        if (matcher.matches()) {
-            return Variable.assignVar(line, scopeNum);
-        }
-        return false;
-    }
-
     private int checkLineFirstRead(String line){
         if(checksBlankOrCommentLine(line)){
             return SUCCESS;
@@ -167,6 +167,12 @@ public class Sjavac {
         return FAILED;
     }
 
+    /**
+     * performs the checks of the code in the second round
+     * checks: teh methods and while/if functions, return statements and scopes
+     * @param line - String
+     * @return SUCCESS if written properly, FAILED if not
+     */
     private int checkLineSecondRead(String line){
         if(checksBlankOrCommentLine(line)){
             return SUCCESS;
@@ -183,7 +189,7 @@ public class Sjavac {
         matcher = ifWhileRegex.matcher(line);
         if(matcher.matches()){
             scopeNum++;
-            //TODO: while if class
+            numOfInnerWhileOrIf++;
             if(!WhileIf.checkIfWhile(line,scopeNum)) return FAILED;
             return SUCCESS;
         }
@@ -194,8 +200,9 @@ public class Sjavac {
         matcher = endOfScopeRegex.matcher(line);
         if(matcher.matches()){
             matcher = returnStatementRegex.matcher(previousLine);
-            if(matcher.matches()){
+            if(matcher.matches() || numOfInnerWhileOrIf > 0){
                 Variable.removeScope(scopeNum);
+                numOfInnerWhileOrIf--;
                 scopeNum--;
                 return SUCCESS;
             }
@@ -211,10 +218,41 @@ public class Sjavac {
         return SUCCESS;
     }
 
+    /**
+     * initializes the method
+     * @param line - String
+     * @return true if success, false if no
+     */
     private boolean startMethod(String line){
         return Method.runMethod(line, scopeNum);
     }
 
+    /**
+     * function checks if the line is blank or a comment
+     * @param line - String
+     * @return true if true, false if false
+     */
+    private boolean checksBlankOrCommentLine(String line){
+        matcher = blankOrCommentRegex.matcher(line);
+        return matcher.matches();
+    }
+
+    /**
+     * checks if the line is a statement that initializes a variable or assigns a variable
+     * @param line string
+     * @return true if succeeded, false if no
+     */
+    private boolean variableCheck(String line){
+        matcher = varInitializeRegex.matcher(line);
+        if (matcher.matches()) {
+            return Variable.initializeVar(line, scopeNum, matcher.group(1) != null);
+        }
+        matcher = varAssignedRegex.matcher(line);
+        if (matcher.matches()) {
+            return Variable.assignVar(line, scopeNum);
+        }
+        return false;
+    }
 
     /**
      * main function
@@ -222,14 +260,7 @@ public class Sjavac {
      */
     public static void main(String[] args) {
         var sJavac = new Sjavac();
-        int result = sJavac.initialRead(args[0]);
-        if (result != SUCCESS){
-            System.out.println(result);
-        }
-        else{
-            result = sJavac.secondRead(args[0]);
-            System.out.println(result);
-        }
+        sJavac.checkCode(args);
     }
 }
 

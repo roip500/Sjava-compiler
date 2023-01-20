@@ -16,7 +16,6 @@ public class Method {
     private static final String BOOLEAN = "boolean";
     private static final String CHAR = "char";
 
-
     //regex:
     private static final Pattern METHOD_DECLARATION_REGEX = Pattern.compile("^\\s*void\\s+([a-zA-Z]+" +
             "\\w*)\\s+([(](?:\\s*(?:final\\s*)?\\w+\\s+\\w+,?)*[)])\\s*[{]$");

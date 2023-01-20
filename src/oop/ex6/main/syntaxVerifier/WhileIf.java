@@ -60,5 +60,4 @@ public class WhileIf {
         return matcher.matches();
     }
 
-
 }
