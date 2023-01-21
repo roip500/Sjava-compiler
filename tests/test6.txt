@@ -1,0 +1,7 @@
+void method(){
+    int x = 7;
+    if(true){
+        int x = x;
+    }
+    return;
+}

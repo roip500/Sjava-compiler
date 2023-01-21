@@ -1,0 +1,13 @@
+void method(){
+//check both scopes and checks || in if
+    int b;
+    int a;
+    if(false){
+        int a = 5;
+        if(a || true){
+            int a = 7;
+            b = 3;
+        }
+    }
+    return  ;
+}

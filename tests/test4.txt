@@ -7,6 +7,6 @@ void foo(int param1){
 int a = 7;
 String b = "hi";
 void foo2(){
-    foo(a);
+    foo(b);
     return;
 }

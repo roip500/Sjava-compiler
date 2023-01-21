@@ -21,7 +21,7 @@ public class Variable{
             "^([a-zA-Z]+\\w*|_\\w+)\\s*=\\s*(.*)\\s*$");
     private static final Pattern VAR_WITHOUT_INITIALIZE_REGEX = Pattern.compile(
             "^([a-zA-Z]+\\w*|_\\w+)\\s*;?\\s*$");
-    private static final Pattern END_REGEX = Pattern.compile("^.*;$");
+    private static final Pattern END_REGEX = Pattern.compile("^(.*);$");
     private static final Pattern VALUE_IS_INT_REGEX = Pattern.compile("[-+]?\\d+");
     //TODO:maybe add ^ and $ at the beginning and end of the regexes
     private static final Pattern VALUE_IS_STRING_REGEX = Pattern.compile("\".*\"");
@@ -60,9 +60,12 @@ public class Variable{
         for(int i = 0; i < allGroups.length ;i++){
             String group = allGroups[i].trim();
             matcher = END_REGEX.matcher(group);
-            if(i < allGroups.length -1 && matcher.matches()) {
-                // TODO: throw exception ; in middle of row
-                return false;
+            if(matcher.matches()) {
+                if(i < allGroups.length -1  || matcher.group(1) == null) {
+                    // TODO: throw exception ; in middle of row
+                    return false;
+                }
+                group = matcher.group(1);
             }
             matcher = VAR_WITH_INITIALIZE_REGEX.matcher(group);
             if(matcher.matches()){
@@ -211,7 +214,17 @@ public class Variable{
                    //TODO: object is final
                    return false;
                }
-               if (!valueLegit(matcher.group(2), scope, varInfo.getType())) {
+               String value = matcher.group(2);
+               // TODO: maybe check in a different place to throw a more accurate exception
+               matcher = END_REGEX.matcher(value);
+               if(matcher.matches()) {
+                   if(matcher.group(1) == null) {
+                       // TODO: throw exception ; in middle of row
+                       return false;
+                   }
+                   value = matcher.group(1);
+               }
+               if (!valueLegit(value, scope, varInfo.getType())) {
                    //TODO: value not legit
                    return false;
                }

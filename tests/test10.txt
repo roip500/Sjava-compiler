@@ -1,0 +1,12 @@
+void foo(boolean x, double y, int z){
+    String b = "stuff";
+    return;
+}
+
+double x = 4.4444;
+int y = -666;
+int z = +6767;
+void foo2(){
+    foo(true, -7.7, y);
+    return;
+}

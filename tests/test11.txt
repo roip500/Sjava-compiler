@@ -1,0 +1,7 @@
+void foo(char c, String s){
+    return;
+}
+void foo2(){
+    foo('c', "hello");
+    return;
+}

@@ -1,0 +1,9 @@
+void foo(){
+    int a = 7;
+    boolean x = 1.1;
+    double y = -1.36;
+    if(x && y || a){
+        return;
+    }
+    return;
+}
