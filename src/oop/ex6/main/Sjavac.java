@@ -70,13 +70,15 @@ public class Sjavac {
      */
     private int firstRead(String fileName) {
         String line;
+        int numOfLine = 1;
         Variable.addScope(scopeNum);
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName))) {
             while ((line = bufferedReader.readLine()) != null){
-                int result = checkLineFirstRead(line);
+                int result = checkLineFirstRead(line, numOfLine);
                 if(result != SUCCESS){
                     return result;
                 }
+                numOfLine++;
             }
             if(scopeNum != 0){
                 //TODO: exception - didn't close all scopes
@@ -97,13 +99,15 @@ public class Sjavac {
      */
     private int secondRead(String fileName){
         String line;
+        int numOfLine = 1;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName))) {
             while ((line = bufferedReader.readLine()) != null) {
-                int result = checkLineSecondRead(line);
+                int result = checkLineSecondRead(line, numOfLine);
                 if(result != SUCCESS){
                     return result;
                 }
                 previousLine = line;
+                numOfLine++;
             }
         } catch (IOException e) {
             System.err.println(INVALID_FILE_ERR_MSG);
@@ -118,54 +122,60 @@ public class Sjavac {
      * @param line - String
      * @return SUCCESS if written properly, FAILED if not
      */
-    private int checkLineFirstRead(String line){
-        if(checksBlankOrCommentLine(line)){
-            return SUCCESS;
-        }
-        line = line.trim();
-        matcher = endOfLineRegex.matcher(line);
-        if (!matcher.matches()) {
-            //TODO: throw an error
-            System.out.println(1);
-            return FAILED;
-        }
-        matcher = endOfScopeRegex.matcher(line);
-        if(matcher.matches()){
-            scopeNum--;
-            if(scopeNum < 0){
+    private int checkLineFirstRead(String line, int numOfLine) {
+        try{
+            if (checksBlankOrCommentLine(line)) {
+                return SUCCESS;
+            }
+            line = line.trim();
+            matcher = endOfLineRegex.matcher(line);
+            if (!matcher.matches()) {
+                //TODO: throw an error
+                System.out.println(1);
+                return FAILED;
+            }
+            matcher = endOfScopeRegex.matcher(line);
+            if (matcher.matches()) {
+                scopeNum--;
+                if (scopeNum < 0) {
+                    //TODO: throw exception
+                    return FAILED;
+                }
+                return SUCCESS;
+            }
+            matcher = ifWhileRegex.matcher(line);
+            if (matcher.matches()) {
+                if (scopeNum > 0) {
+                    scopeNum++;
+                    return SUCCESS;
+                }
                 //TODO: throw exception
                 return FAILED;
             }
-            return SUCCESS;
-        }
-        matcher = ifWhileRegex.matcher(line);
-        if(matcher.matches()){
-            if(scopeNum > 0){
-                scopeNum++;
-                return SUCCESS;
-            }
-            //TODO: throw exception
-            return FAILED;
-        }
-        matcher = returnStatementRegex.matcher(line);
-        if(matcher.matches() && scopeNum ==0){
-            //TODO: throw exception
-            return FAILED;
-        }
-        if(scopeNum > 0) return SUCCESS;
-        matcher = methodRegex.matcher(line);
-        if (matcher.matches()) {
-            scopeNum++;
-            if(!Method.addMethod(line)){
+            matcher = returnStatementRegex.matcher(line);
+            if (matcher.matches() && scopeNum == 0) {
+                //TODO: throw exception
                 return FAILED;
             }
-            return SUCCESS;
+            if (scopeNum > 0) return SUCCESS;
+            matcher = methodRegex.matcher(line);
+            if (matcher.matches()) {
+                scopeNum++;
+                if (!Method.addMethod(line)) {
+                    return FAILED;
+                }
+                return SUCCESS;
+            }
+            if (variableCheck(line)) {
+                return SUCCESS;
+            }
+            //TODO: throw a general line error
+            return FAILED;
         }
-        if(variableCheck(line)){
-            return SUCCESS;
+        catch (RuntimeException e){
+            System.err.println("line " + numOfLine +": " + e.getMessage());
+            return FAILED;
         }
-        //TODO: throw a general line error
-        return FAILED;
     }
 
     /**
@@ -174,49 +184,55 @@ public class Sjavac {
      * @param line - String
      * @return SUCCESS if written properly, FAILED if not
      */
-    private int checkLineSecondRead(String line){
-        if(checksBlankOrCommentLine(line)){
-            return SUCCESS;
-        }
-        line = line.trim();
-        matcher = methodRegex.matcher(line);
-        if (matcher.matches()) {
-            scopeNum++;
-            if(!startMethod(line)) {
+    private int checkLineSecondRead(String line, int numOfLine){
+        try {
+            if (checksBlankOrCommentLine(line)) {
+                return SUCCESS;
+            }
+            line = line.trim();
+            matcher = methodRegex.matcher(line);
+            if (matcher.matches()) {
+                scopeNum++;
+                if (!startMethod(line)) {
+                    return FAILED;
+                }
+                return SUCCESS;
+            }
+            matcher = ifWhileRegex.matcher(line);
+            if (matcher.matches()) {
+                scopeNum++;
+                numOfInnerWhileOrIf++;
+                WhileIf.checkIfWhile(line, scopeNum);
+                return SUCCESS;
+            }
+            matcher = returnStatementRegex.matcher(line);
+            if (matcher.matches()) {
+                return SUCCESS;
+            }
+            matcher = endOfScopeRegex.matcher(line);
+            if (matcher.matches()) {
+                matcher = returnStatementRegex.matcher(previousLine);
+                if (matcher.matches() || numOfInnerWhileOrIf > 0) {
+                    Variable.removeScope(scopeNum);
+                    numOfInnerWhileOrIf--;
+                    scopeNum--;
+                    return SUCCESS;
+                }
+                //TODO: exception - no return value at the end
                 return FAILED;
             }
-            return SUCCESS;
-        }
-        matcher = ifWhileRegex.matcher(line);
-        if(matcher.matches()){
-            scopeNum++;
-            numOfInnerWhileOrIf++;
-            if(!WhileIf.checkIfWhile(line,scopeNum)) return FAILED;
-            return SUCCESS;
-        }
-        matcher = returnStatementRegex.matcher(line);
-        if(matcher.matches()){
-            return SUCCESS;
-        }
-        matcher = endOfScopeRegex.matcher(line);
-        if(matcher.matches()){
-            matcher = returnStatementRegex.matcher(previousLine);
-            if(matcher.matches() || numOfInnerWhileOrIf > 0){
-                Variable.removeScope(scopeNum);
-                numOfInnerWhileOrIf--;
-                scopeNum--;
-                return SUCCESS;
+            if (scopeNum != 0) {
+                if (variableCheck(line)) {
+                    return SUCCESS;
+                }
+                return Method.checkMethodCall(line);
             }
-            //TODO: exception - no return value at the end
+            return SUCCESS;
+        }
+        catch (RuntimeException e){
+            System.err.println("line " + numOfLine +": " + e.getMessage());
             return FAILED;
         }
-        if(scopeNum != 0) {
-            if (variableCheck(line)) {
-                return SUCCESS;
-            }
-            return Method.checkMethodCall(line);
-        }
-        return SUCCESS;
     }
 
     /**

@@ -39,13 +39,13 @@ public class Method {
         line = line.trim();
         Matcher matcher = METHOD_DECLARATION_REGEX.matcher(line);
         if (!matcher.matches()) {
-            //TODO: throw exception invalid method declaration
-            return false;
+            throw new IncorrectCodeExtensionException(
+                    "invalid method declaration");
         }
         String methodName = matcher.group(1);
         if (methods.containsKey(methodName)) {
-            //TODO: throw 2 same named methods error
-            return false;
+            throw new IncorrectCodeExtensionException(
+                    "method name already used in code");
         }
         String argListWithParentheses = matcher.group(2);
         matcher = REMOVE_PARENTHESES_FROM_VAR_LIST.matcher(argListWithParentheses);
@@ -73,10 +73,11 @@ public class Method {
             group = group.trim();
             matcher = ARG_DEC_LINE_REGEX.matcher(group);
             if (!matcher.matches()) {
-                //TODO: throw invalid arg error
-                return false;
+                throw new IncorrectCodeExtensionException(
+                        "invalid arguments declared in method declaration");
             }
-            VarInfo varInfo = new VarInfo(matcher.group(3), matcher.group(2), true, matcher.group(1) != null);
+            VarInfo varInfo = new VarInfo(matcher.group(3), matcher.group(2),
+                    true, matcher.group(1) != null);
             argListAndTypeInfo.add(varInfo);
         }
         methods.put(methodName, argListAndTypeInfo);
@@ -108,8 +109,8 @@ public class Method {
     public static boolean runMethod(String line, int scope) {
         Matcher matcher = METHOD_DECLARATION_REGEX.matcher(line);
         if (!matcher.matches()) {
-            //TODO: throw exception invalid method declaration
-            return false;
+            throw new IncorrectCodeExtensionException(
+                    "invalid method declaration");
         }
         String methodName = matcher.group(1);
         Method.addArguments(methodName, scope);
@@ -127,29 +128,28 @@ public class Method {
         Matcher matcher = VARIABLES_PASSED_TO_METHOD_REGEX.matcher(line);
         if (!matcher.matches()) {
             // TODO: exception - line has no meaning
-            return FAILED;
+            throw new IncorrectCodeExtensionException(
+                    "invalid text - has no meaning");
         }
         String name = matcher.group(1);
         if (!methods.containsKey(name)) {
             // TODO: exception - method doesn't exist
-            return FAILED;
+            throw new IncorrectCodeExtensionException(
+                    "method doesn't exist");
         }
         var lstOfArgs = methods.get(name);
         int size = lstOfArgs.size();
         String[] args = matcher.group(2).split(",");
         if (args.length != size) {
             // TODO: exception - num of variables passed doesn't match request
-            return FAILED;
+            throw new IncorrectCodeExtensionException(
+                    "number of variables passed to the method is incorrect");
         }
         for (int i = 0; i < size; i++) {
             String arg = args[i].trim();
             VarInfo info = Variable.getInfo(arg);
             if (info != null) {
-                if (!checkInfoMatch(info, lstOfArgs.get(i))) {
-                    // TODO: exception - variable doesn't match the required info
-                    return FAILED;
-                }
-                return SUCCESS;
+                checkInfoMatch(info, lstOfArgs.get(i));
             }
             else {
                 if (!Variable.checkIfValueIsTheRightType(arg, lstOfArgs.get(i).getType())) {
@@ -163,27 +163,44 @@ public class Method {
 
     /**
      * this function checks if the parameter given in a function call matches the parameter in the argument list
-     *
      * @param callInfo-VarInfo of called parameter
-     * @param argInfo-         VarInfo of the argument
-     * @return true if matches and false if not
+     * @param argInfo- VarInfo of the argument
      */
-    private static boolean checkInfoMatch(VarInfo callInfo, VarInfo argInfo) {
-        if (!callInfo.isInitialized()) return false;
-        if (callInfo.isFinal() && !argInfo.isFinal()) return false;
+    private static void checkInfoMatch(VarInfo callInfo, VarInfo argInfo) {
+        if (!callInfo.isInitialized()) throw new IncorrectCodeExtensionException(
+                "variable wasn't initialized");
+        if (callInfo.isFinal() && !argInfo.isFinal()) throw new IncorrectCodeExtensionException(
+                "variable isn't Final");
         String destType = argInfo.getType();
+        boolean mark = false;
         switch (callInfo.getType()) {
             case INT:
-                return destType.equals(INT) || destType.equals(DOUBLE) || destType.equals(BOOLEAN);
+                if(destType.equals(INT) || destType.equals(DOUBLE) || destType.equals(BOOLEAN)){
+                    mark = true;
+                    break;
+                }
             case DOUBLE:
-                return destType.equals(DOUBLE) || destType.equals(BOOLEAN);
+                if(destType.equals(DOUBLE) || destType.equals(BOOLEAN)){
+                    mark = true;
+                    break;
+                }
             case BOOLEAN:
-                return destType.equals(BOOLEAN);
+                if(destType.equals(BOOLEAN)){
+                    mark = true;
+                    break;
+                }
             case STRING:
-                return destType.equals(STRING);
+                if(destType.equals(STRING)){
+                    mark = true;
+                    break;
+                }
             case CHAR:
-                return destType.equals(CHAR);
+                if(destType.equals(CHAR)){
+                    mark = true;
+                    break;
+                }
         }
-        return true;
+        throw new IncorrectCodeExtensionException(
+                "variable type isn't correct");
     }
 }

@@ -1,6 +1,6 @@
-void foo(int param1){
+voidfoo(int param1){
     int a = 5 ;
-    if (param1){
+    if(param1){
            int a = 20 ;
            boolean param1 = true ;
            while (param1) {
@@ -11,5 +11,3 @@ void foo(int param1){
 }
 
 int param1 = 5 ;
-
-//bug - has a problem with the functions name. something with the regex

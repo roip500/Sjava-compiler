@@ -20,11 +20,10 @@ public class WhileIf {
      * @return true if its valid and false if not
      */
     public static boolean checkIfWhile(String line, int scope){
-//        Method method = why method?
         Matcher matcher = ifWhileRegex.matcher(line);
         if(!matcher.matches()){
-            // TODO: throw invalid if/while line err
-            return false;
+            throw new IncorrectCodeExtensionException(
+                    "if statement doesn't match the legal format");
         }
         String [] args = matcher.group(1).split("\\|\\||&&");
         for(String arg : args){
@@ -32,17 +31,17 @@ public class WhileIf {
             if(checkGenericConditions(arg)) continue;
             VarInfo info  = Variable.getInfo(arg);
             if(info == null){
-                // TODO: throw non existing var error
-                return false;
+                throw new IncorrectCodeExtensionException(
+                        "parameter given doesn't exist");
             }
             if(!info.isInitialized()){
-                // TODO: throw non initialized var error
-                return false;
+                throw new IncorrectCodeExtensionException(
+                        "parameter given isn't initialized");
             }
             String varType = info.getType();
             if(varType.equals(CHAR) || varType.equals(STRING)){
-                // TODO: throw invalid type for condition error
-                return false;
+                throw new IncorrectCodeExtensionException(
+                        "the parameter given type doesn't match the required type");
             }
         }
         Variable.addScope(scope);
