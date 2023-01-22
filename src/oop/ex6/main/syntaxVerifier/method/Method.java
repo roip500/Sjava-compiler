@@ -182,8 +182,6 @@ public class Method {
     private static void checkInfoMatch(VarInfo callInfo, VarInfo argInfo) throws MethodVariablesException {
         if (!callInfo.isInitialized()) throw new MethodVariablesException(
                 String.format(ERROR8, callInfo.getName()));
-        if (callInfo.isFinal() && !argInfo.isFinal()) throw new MethodVariablesException(
-                String.format(ERROR9, callInfo.getName()));
         String destType = argInfo.getType();
         switch (callInfo.getType()) {
             case INT:
