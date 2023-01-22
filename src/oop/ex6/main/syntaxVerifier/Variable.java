@@ -136,49 +136,33 @@ public class Variable{
         switch (type) {
             case (INT): {
                 matcher = VALUE_IS_INT_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 break;
             }
             case (DOUBLE): {
                 matcher = VALUE_IS_DOUBLE_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 matcher = VALUE_IS_INT_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 break;
             }
             case (CHAR): {
                 matcher = VALUE_IS_CHAR_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 break;
             }
             case (BOOLEAN): {
                 matcher = VALUE_IS_BOOLEAN_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 matcher = VALUE_IS_DOUBLE_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 matcher = VALUE_IS_INT_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 break;
             }
             case (STRING): {
                 matcher = VALUE_IS_STRING_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 break;
             }
         }
