@@ -1,4 +1,4 @@
-voidfoo(int param1){
+void foo(int param1){
     int a = 5 ;
     if(param1){
            int a = 20 ;
@@ -10,4 +10,6 @@ voidfoo(int param1){
     return ;
 }
 
-int param1 = 5 ;
+int param1;
+
+//TODO  - bug because param1 wasn't initialized

@@ -97,6 +97,8 @@ public class Method {
         for (var info : argListAndTypeInfo) {
             Variable.addVariable(info.getName(), info, scope);
         }
+        //TODO: where do i check if the argument was initialized??
+
     }
 
     /**
