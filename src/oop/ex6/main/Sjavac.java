@@ -216,6 +216,7 @@ public class Sjavac {
                     Variable.removeScope(scopeNum);
                     numOfInnerWhileOrIf--;
                     scopeNum--;
+                    if(scopeNum == 0) Variable.removeAssignmentsAtEndOfMethod();
                     return SUCCESS;
                 }
                 //TODO: exception - no return value at the end

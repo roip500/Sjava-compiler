@@ -64,5 +64,13 @@ public class VarInfo {
     public String getName() {
         return name;
     }
+
+    /**
+     * this function is used to deAssign global vars who had been initialised inside a method' and now that
+     * the method is over they no longer have been assigned a value
+     */
+    public void deAssign(){
+        this.initialized = false;
+    }
 }
 
