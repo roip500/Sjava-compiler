@@ -1,4 +1,63 @@
-roip500
 omer.benmoshe
+roip500
 
+Our design for the ex was the following:
+1. our main class, sJavac read the file twice. the first time it checked the
+   global variables, the scopes (making sure that all the scopes get closed and that we finish
+   in scope 0) and makes a list of all the methods that were created in the file.
+   the second read goes into the methods and checks that all the variables are used correctly,
+   that the if\while statements are legal and that all the calls to and inside a method are legal.
+   if any check ius false then an error is thrown. the class will catch the error and print to with
+   the line where the error happened.
+2. We created 3 classes, each one checking the properties of its kind:
+   a - Variables: holds a list of hashmaps where each cell in the list is a scope, and the
+                  hashmap holds all the variables in the scope (the key is the name of the variable,
+                  and the value is a class called VarInfo which holds the information regarding the
+                  variable). the class checks everything to do with the variables.
+   b - Methods: holds a hashmap where the key is the name of the method and the value is the list of
+                variables the method needs to get.
+   c - WhileIf: checks that the if and while statements are legal and that the values given are legal
+                values.
+   each class has its own class of exceptions that are designed so the message will be in a form of a
+   tree of information.
+
+the tests we created:
+1 -
+2 -
+3 -
+4 -
+5 -
+6 -
+7 -
+8 -
+9 -
+10 -
+11 -
+12 -
+13 -
+14 -
+15 -
+16 -
+17 -
+18 -
+19 -
+20 -
+
+the questions:
+6.1 - As we wrote above we handled the errors by throwing exceptions from the 3 classes to the
+      main class, which then caught it and printed them out with the line and it number. this
+      helped simplify the presses cause throwing the exception minimized the usage of returning
+      values and allows our code to be more efficient.
+6.2.1 - how would we modify our code to add new types of variables?
+        Because we created a class for each type of object in the s-java file so any new variable
+        will be added to the Variable class.
+        the first step would be to clarify the legal way to write a value of such type, and that
+        would allow us to write a regex that would be able to state whether or not the object fits
+        the type. the we will need to add a case to our function "checkIfValueIsTheRightType" which
+        is the only function that checks if a value if from a specific type.
+        all the rest of the code is generic to the types of values so there is no need to change any
+        of it.
+6.2.2 - how would we implement Different methods’ return types?
+        the return type is part of the description of the method, so we would need to change the method
+        hashmap from having a list of variables as a value to having
 

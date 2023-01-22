@@ -65,10 +65,14 @@ public class Sjavac {
         int result = this.firstRead(args[0]);
         if (result != SUCCESS){
             System.out.println(result);
+            Variable.clearAllDataBases();
+            Method.resetAllDataBases();
         }
         else{
             result = this.secondRead(args[0]);
             System.out.println(result);
+            Variable.clearAllDataBases();
+            Method.resetAllDataBases();
         }
     }
 

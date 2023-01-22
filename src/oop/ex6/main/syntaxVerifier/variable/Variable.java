@@ -287,4 +287,12 @@ public class Variable{
         return matcher.matches();
     }
 
+    /**
+     * resets the data bases of the class
+     */
+    public static void clearAllDataBases(){
+        listOfArgs.clear();
+        initialisedInMethod.clear();
+    }
+
 }

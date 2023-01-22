@@ -193,4 +193,11 @@ public class Method {
         throw new MethodVariablesException(
                 String.format(ERROR10, callInfo.getName()));
     }
+
+    /**
+     * function clears teh data bases in the class
+     */
+    public static void resetAllDataBases(){
+        methods.clear();
+    }
 }
