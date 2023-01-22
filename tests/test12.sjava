@@ -13,8 +13,8 @@ void foo(int param1){
 int param1 = 5;
 
 void foo2(){
-       foo(param1);
+       foo(param);
        return;
 }
 
-//TODO: says there is a bug
+//TODO: fix exception

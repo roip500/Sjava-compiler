@@ -172,33 +172,17 @@ public class Method {
         if (callInfo.isFinal() && !argInfo.isFinal()) throw new IncorrectCodeExtensionException(
                 "variable isn't Final");
         String destType = argInfo.getType();
-        boolean mark = false;
         switch (callInfo.getType()) {
             case INT:
-                if(destType.equals(INT) || destType.equals(DOUBLE) || destType.equals(BOOLEAN)){
-                    mark = true;
-                    break;
-                }
+                if(destType.equals(INT) || destType.equals(DOUBLE) || destType.equals(BOOLEAN)) return;
             case DOUBLE:
-                if(destType.equals(DOUBLE) || destType.equals(BOOLEAN)){
-                    mark = true;
-                    break;
-                }
+                if(destType.equals(DOUBLE) || destType.equals(BOOLEAN)) return;
             case BOOLEAN:
-                if(destType.equals(BOOLEAN)){
-                    mark = true;
-                    break;
-                }
+                if(destType.equals(BOOLEAN)) return;
             case STRING:
-                if(destType.equals(STRING)){
-                    mark = true;
-                    break;
-                }
+                if(destType.equals(STRING)) return;
             case CHAR:
-                if(destType.equals(CHAR)){
-                    mark = true;
-                    break;
-                }
+                if(destType.equals(CHAR)) return;
         }
         throw new IncorrectCodeExtensionException(
                 "variable type isn't correct");
