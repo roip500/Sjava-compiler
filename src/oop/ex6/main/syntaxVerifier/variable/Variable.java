@@ -86,7 +86,7 @@ public class Variable{
                         var info = new VarInfo(matcher.group(1), type, true, isFinal);
                         listOfArgs.get(scope).put(matcher.group(1), info);
                         continue;
-                    }catch (GeneralVariableException e){
+                    }catch (Exception e){
                         throw new InitializeVariableValueException(e.getMessage());
                     }
                 }else{
@@ -114,7 +114,7 @@ public class Variable{
      * @param scope - integer
      * @param type - String
      */
-    private static void valueLegit(String value, int scope, String type) throws GeneralVariableException {
+    private static void valueLegit(String value, int scope, String type) throws Exception {
         if(Variable.checkIfValueIsTheRightType(value, type)){
             return;
         }
@@ -139,22 +139,27 @@ public class Variable{
      * @param callInfo-VarInfo of called parameter
      * @param destType- String
      */
-    public static void checkInfoMatch(VarInfo callInfo, String destType) throws GeneralVariableException {
+    public static void checkInfoMatch(VarInfo callInfo, String destType) throws Exception {
         if (!callInfo.isInitialized()) throw new GeneralVariableException(
                 String.format(ERROR8, callInfo.getName()));
         switch (callInfo.getType()) {
             case INT:
                 if(destType.equals(INT) || destType.equals(DOUBLE) || destType.equals(BOOLEAN)) return;
+                break;
             case DOUBLE:
                 if(destType.equals(DOUBLE) || destType.equals(BOOLEAN)) return;
+                break;
             case BOOLEAN:
                 if(destType.equals(BOOLEAN)) return;
+                break;
             case STRING:
                 if(destType.equals(STRING)) return;
+                break;
             case CHAR:
                 if(destType.equals(CHAR)) return;
+                break;
         }
-        throw new GeneralVariableException(
+        throw new Exception(
                 String.format(ERROR7, callInfo.getName()));
     }
 
