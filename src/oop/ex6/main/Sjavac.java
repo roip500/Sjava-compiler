@@ -7,6 +7,7 @@ import oop.ex6.main.syntaxVerifier.WhileIf;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -173,7 +174,11 @@ public class Sjavac {
             return FAILED;
         }
         catch (RuntimeException e){
-            System.err.println("line " + numOfLine +": " + e.getMessage());
+            StringBuilder strToPrint = new StringBuilder("line " + numOfLine + ": " + e.getMessage() + "\n");
+            for (var txt: e.getStackTrace()) {
+                strToPrint.append(txt + "\n");
+            }
+            System.err.println(strToPrint);
             return FAILED;
         }
     }
@@ -230,7 +235,11 @@ public class Sjavac {
             return SUCCESS;
         }
         catch (RuntimeException e){
-            System.err.println("line " + numOfLine +": " + e.getMessage());
+            StringBuilder strToPrint = new StringBuilder("line " + numOfLine + ": " + e.getMessage() + "\n");
+            for (var txt: e.getStackTrace()) {
+                strToPrint.append(txt + "\n");
+            }
+            System.err.println(strToPrint);
             return FAILED;
         }
     }
