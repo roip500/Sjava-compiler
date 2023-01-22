@@ -1,0 +1,5 @@
+int a = 5, b, c = 7;
+void foo(){
+    int x = 7, a = c;
+    b = 7;
+}

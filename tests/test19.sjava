@@ -1,0 +1,9 @@
+void foo(final int a){
+    return ;
+}
+void boo(){
+    int a = 7;
+    foo(a);
+    return;
+}
+final int a = 9;

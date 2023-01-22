@@ -1,0 +1,11 @@
+void foo(  boolean  x){
+    boolean y = 7;
+    boolean z = 7.7;
+    double d = 5;
+    return;
+}
+void boo(){
+    int a = 5;
+    foo(a);
+    return;
+}

@@ -1,0 +1,9 @@
+void foo(int param){
+    if(true){
+        param = 7;
+    }
+    return;
+}
+
+int a = 7;
+foo(a);
