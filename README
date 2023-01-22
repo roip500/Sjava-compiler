@@ -1,7 +1,7 @@
 omer.benmoshe
 roip500
 
-Our design for the ex was the following:
+Our design for the ex' was the following:
 1. our main class, sJavac read the file twice. the first time it checked the
    global variables, the scopes (making sure that all the scopes get closed and that we finish
    in scope 0) and makes a list of all the methods that were created in the file.
@@ -20,6 +20,7 @@ Our design for the ex was the following:
                 values.
    each class has its own class of exceptions that are designed so the message will be in a form of a
    tree of information.
+
 
 the tests we created:
 1 -
@@ -43,11 +44,16 @@ the tests we created:
 19 -
 20 -
 
+
 the questions:
+
+
 6.1 - As we wrote above we handled the errors by throwing exceptions from the 3 classes to the
       main class, which then caught it and printed them out with the line and it number. this
       helped simplify the presses cause throwing the exception minimized the usage of returning
       values and allows our code to be more efficient.
+
+
 6.2.1 - how would we modify our code to add new types of variables?
         Because we created a class for each type of object in the s-java file so any new variable
         will be added to the Variable class.
@@ -57,7 +63,33 @@ the questions:
         is the only function that checks if a value if from a specific type.
         all the rest of the code is generic to the types of values so there is no need to change any
         of it.
+
+
 6.2.2 - how would we implement Different methods’ return types?
         the return type is part of the description of the method, so we would need to change the method
-        hashmap from having a list of variables as a value to having
+        hashmap from having a list of variables as a value to having a new object called MethodInfo.
+        MethodInfo will be a new class we will create, which much like VarInfo, will hold all the information
+        about the method. one of the things this class will hold would be the type the method can return.
+        when ever we call the return function in method we will check that the value matches the type
+        the method is required to return, and if no it will throw an exception.
+
+
+        how would we implement Class?
+        we would need to create a class function that would be in charge of checking all the rules regarding
+        classes. this class will also have a hashmap that will have names of classes as its keys, and for value
+        it would have a list of lists. the first list will hold all the abjects initialized in the class. the
+        second list will hold all the methods the class has. we would need to implement a private and public
+        kind of method in the Method class and when calling a method that belongs to a class we would check
+        if its public or private and act accordingly.
+
+
+6.3 - the first regex was used to check if the line is a initialization of a variable:
+      "^([a-zA-Z]+\\w*|_\\w+)\\s*=\\s*(.*)\\s*$"
+
+
+      the second regex was used to check the while if statement:
+      ^(?:if|while)\\s*[(](\\s*(?:(?:true|false|\\w+|[+\\-]?(?:\\d+\\.?\\d*|\\d*\\.\\d+))+\\s*
+      (?:\\|\\||&&)?\\s*)+\\s*)[)]\\s*[{]$"
+
+
 

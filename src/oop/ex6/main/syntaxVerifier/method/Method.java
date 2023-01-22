@@ -38,9 +38,8 @@ public class Method {
     private static final Pattern ARG_DEC_LINE_REGEX = Pattern.compile("\\s*(final\\s+)?(int|boolean|" +
             "String|double|char)\\s+([a-zA-Z]+\\w*|_\\w+)\\s*");
     private static final Pattern VARIABLES_PASSED_TO_METHOD_REGEX = Pattern.compile(
-            "\\s*([a-zA-Z]\\w*)\\s*[(]((?:\\s*[\\+-]?[\\w\\.'\"]+\\s*,?)*)[)]\\s*;$");
+            "\\s*([a-zA-Z]\\w*)\\s*[(]((?:\\s*[+-]?[\\w.'\"]+\\s*,?)*)[)]\\s*;$");
     private static final Pattern noArgumentsRegex = Pattern.compile("\\s*");
-    // TODO: changed to support raw values at function calls
 
     //data-base:
     private static final HashMap<String, ArrayList<VarInfo>> methods = new HashMap<>();
@@ -90,6 +89,11 @@ public class Method {
             matcher = ARG_DEC_LINE_REGEX.matcher(group);
             if (!matcher.matches()) {
                 throw new MethodVariablesException(ERROR3);
+            }
+            for (var info: argListAndTypeInfo) {
+                if(info.getName().equals(matcher.group(3))){
+                    throw new MethodVariablesException(ERROR2);
+                }
             }
             VarInfo varInfo = new VarInfo(matcher.group(3), matcher.group(2),
                     true, matcher.group(1) != null);
@@ -198,7 +202,7 @@ public class Method {
     }
 
     /**
-     * function clears teh data bases in the class
+     * function clears the databases in the class
      */
     public static void resetAllDataBases(){
         methods.clear();

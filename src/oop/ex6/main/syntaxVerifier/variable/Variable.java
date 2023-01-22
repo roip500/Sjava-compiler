@@ -31,14 +31,13 @@ public class Variable{
     private static final Pattern VAR_WITHOUT_INITIALIZE_REGEX = Pattern.compile(
             "^([a-zA-Z]+\\w*|_\\w+)\\s*;?\\s*$");
     private static final Pattern END_REGEX = Pattern.compile("^(.*);$");
-    private static final Pattern VALUE_IS_INT_REGEX = Pattern.compile("[-+]?\\d+");
-    //TODO:maybe add ^ and $ at the beginning and end of the regexes
+    private static final Pattern VALUE_IS_INT_REGEX = Pattern.compile("^[-+]?\\d+$");
     private static final Pattern VALUE_IS_STRING_REGEX = Pattern.compile("\".*\"");
     private static final Pattern VALUE_IS_CHAR_REGEX = Pattern.compile("'.'");
     private static final Pattern VALUE_IS_BOOLEAN_REGEX = Pattern.compile(
-            "true|false|[-+]?\\d+|[-+]?\\d*[.]\\d+|[-+]?\\d+[.]\\d*");
+            "^true|false|[-+]?\\d+|[-+]?\\d*[.]\\d+|[-+]?\\d+[.]\\d*$");
     private static final Pattern VALUE_IS_DOUBLE_REGEX = Pattern.compile(
-            "[-+]?\\d*[.]\\d+|[-+]?\\d+[.]\\d*");
+            "^[-+]?\\d*[.]\\d+|[-+]?\\d+[.]\\d*$");
     private static final Pattern LEGIT_NAME_REGEX = Pattern.compile(
             "^(?:[a-zA-Z]+\\w*|_\\w+)\\s*$");
 
@@ -288,7 +287,7 @@ public class Variable{
     }
 
     /**
-     * resets the data bases of the class
+     * resets the databases of the class
      */
     public static void clearAllDataBases(){
         listOfArgs.clear();

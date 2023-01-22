@@ -20,6 +20,8 @@ public class Sjavac {
     private static final String ERROR5 = "line doesn't fit any legal pattern";
     private static final String ERROR6 = "method doesn't end with a return line";
     private static final String ERROR7 = "not allowed to call a method outside a method";
+    private static final String ERROR8 = "no file was given";
+    private static final String ERROR9 = "did not close all the scopes in the file";
 
     //global:
     private static final int SUCCESS = 0;
@@ -29,11 +31,9 @@ public class Sjavac {
     //regex string pattern:
     private static final String INVALID_FILE_ERR_MSG = "Invalid file name";
     private static final String BLANK_OR_COMMENT = "^//.*$|\\s*";
-    private static final String END_OF_LINE_MODIFIERS = "^.*[;{}]$"; //TODO: maybe unnecessary
+    private static final String END_OF_LINE_MODIFIERS = "^.*[;{}]$";
     private static final String VAR_INITIALIZE_LINE = "^\\s*(final)?\\s*(?:int|double|String|boolean|char)\\s+.*;$";
     private static final String VAR_ASSIGNMENT_LINE = "^\\s*[a-zA-Z_\\d]\\s*=\\s*.*?;$";
-    //TODO: add multiple assignments -- doesn't matter, it recognises the first assignment and counts the rest
-    // as part of the assignment, so technically it works for multiple stuff.
     private static final String METHOD_LINE = "^\\s*void.*[{]$";
 
     //pattern declaration:
@@ -59,21 +59,16 @@ public class Sjavac {
      */
     public void checkCode(String[] args){
         if(args.length == 0){
-            // TODO - exception file was not given
+            System.err.println(ERROR8);
             System.out.println(ERROR);
         }
         int result = this.firstRead(args[0]);
-        if (result != SUCCESS){
-            System.out.println(result);
-            Variable.clearAllDataBases();
-            Method.resetAllDataBases();
-        }
-        else{
+        if (result == SUCCESS) {
             result = this.secondRead(args[0]);
-            System.out.println(result);
-            Variable.clearAllDataBases();
-            Method.resetAllDataBases();
         }
+        System.out.println(result);
+        Variable.clearAllDataBases();
+        Method.resetAllDataBases();
     }
 
     /**
@@ -94,7 +89,7 @@ public class Sjavac {
                 numOfLine++;
             }
             if(scopeNum != 0){
-                //TODO: exception - didn't close all scopes
+                System.err.println(ERROR9);
                 return FAILED;
             }
         }
