@@ -1,7 +1,9 @@
 package oop.ex6.main.syntaxVerifier.variable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +28,9 @@ public class Variable{
     private static final String BOOLEAN = "boolean";
     private static final String CHAR = "char";
     private static final String FINAL = "final";
+    private static final HashSet<String> keyWords = new HashSet<>
+            (Arrays.asList("int","double","String","boolean","char","void","final","if",
+                    "while","true","false","return"));
 
     //pattern declaration:
     private static final Pattern VAR_WITH_INITIALIZE_REGEX = Pattern.compile(
@@ -314,6 +319,7 @@ public class Variable{
      * @return true if yes, false if no
      */
     public static boolean isALegalVariableName(String name){
+        if(keyWords.contains(name)) return false;
         matcher = LEGIT_NAME_REGEX.matcher(name);
         return matcher.matches();
     }
