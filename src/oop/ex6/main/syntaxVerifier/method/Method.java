@@ -11,17 +11,19 @@ import java.util.regex.Pattern;
 public class Method {
 
     //exceptions text:
-    private static final String ERROR1 = "line doesn't match the legal format for nitializing a method";
+    private static final String ERROR1 = "line doesn't match the legal format for initializing a method";
     private static final String ERROR2 = "method name already used in code";
     private static final String ERROR3 = "invalid variable declared in method declaration";
     private static final String ERROR4 = "invalid method declaration";
     private static final String ERROR5 = "invalid text - has no meaning";
     private static final String ERROR6 = "method doesn't exist";
     private static final String ERROR7 = "number of variables passed to the method is incorrect";
+    private static final String ERROR8 = "variable %s wasn't initialized";
+    private static final String ERROR9 = "variable %s wasn't Final";
+    private static final String ERROR10 = "variable %s type was incorrect";
 
     //global:
     private static final int SUCCESS = 0;
-    private static final int FAILED = 1;
     private static final String INT = "int";
     private static final String DOUBLE = "double";
     private static final String STRING = "String";
@@ -166,14 +168,15 @@ public class Method {
 
     /**
      * this function checks if the parameter given in a function call matches the parameter in the argument list
+     * * throws an exception if false
      * @param callInfo-VarInfo of called parameter
      * @param argInfo- VarInfo of the argument
      */
     private static void checkInfoMatch(VarInfo callInfo, VarInfo argInfo) throws MethodVariablesException {
         if (!callInfo.isInitialized()) throw new MethodVariablesException(
-                "variable"+ callInfo.getName() +  "wasn't initialized");
+                String.format(ERROR8, callInfo.getName()));
         if (callInfo.isFinal() && !argInfo.isFinal()) throw new MethodVariablesException(
-                "variable"+ callInfo.getName() +" isn't Final");
+                String.format(ERROR9, callInfo.getName()));
         String destType = argInfo.getType();
         switch (callInfo.getType()) {
             case INT:
@@ -188,8 +191,6 @@ public class Method {
                 if(destType.equals(CHAR)) return;
         }
         throw new MethodVariablesException(
-                "variable "+ callInfo.getName() +" type isn't correct");
+                String.format(ERROR10, callInfo.getName()));
     }
-
-    //TODO: talk to omer about this
 }

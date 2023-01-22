@@ -1,6 +1,6 @@
 void foo(int param1){
     int a = 5 ;
-    if(param){
+    if(param1){
            int a = 20 ;
            boolean param1 = true ;
            while (param1) {

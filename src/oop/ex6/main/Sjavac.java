@@ -235,8 +235,13 @@ public class Sjavac {
         }
     }
 
+    /**
+     * function prints the exception
+     * @param e - exception
+     * @param numOfLine - Integer
+     */
     private void printException(Exception e, int numOfLine){
-        System.err.println("line " + numOfLine + ":\n" + e.getMessage());
+        System.err.println("line " + numOfLine + ": " + e.getMessage());
     }
 
     /**
@@ -263,14 +268,16 @@ public class Sjavac {
      * @param line string
      * @return true if succeeded, false if no
      */
-    private boolean variableCheck(String line){
+    private boolean variableCheck(String line) throws Exception {
         matcher = varInitializeRegex.matcher(line);
         if (matcher.matches()) {
-            return Variable.initializeVar(line, scopeNum, matcher.group(1) != null);
+            Variable.initializeVar(line, scopeNum, matcher.group(1) != null);
+            return true;
         }
         matcher = varAssignedRegex.matcher(line);
         if (matcher.matches()) {
-            return Variable.assignVar(line, scopeNum);
+            Variable.assignVar(line, scopeNum);
+            return true;
         }
         return false;
     }
