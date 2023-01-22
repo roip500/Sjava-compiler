@@ -1,7 +1,3 @@
-void method(){
-    int x = 7;
-    if(true){
-        int x = x;
-    }
-    return;
-}
+   int a=3;
+boolean b;
+b=a;

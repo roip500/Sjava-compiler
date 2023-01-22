@@ -18,17 +18,11 @@ public class Method {
     private static final String ERROR5 = "invalid text - has no meaning";
     private static final String ERROR6 = "method doesn't exist";
     private static final String ERROR7 = "number of variables passed to the method is incorrect";
-    private static final String ERROR8 = "variable %s wasn't initialized";
+    private static final String ERROR8 = "variable %s doesn't exist";
     private static final String ERROR9 = "variable %s type was incorrect";
-    private static final String ERROR10 = "variable %s doesn't exist";
 
     //global:
     private static final int SUCCESS = 0;
-    private static final String INT = "int";
-    private static final String DOUBLE = "double";
-    private static final String STRING = "String";
-    private static final String BOOLEAN = "boolean";
-    private static final String CHAR = "char";
 
     //regex:
     private static final Pattern METHOD_DECLARATION_REGEX = Pattern.compile("^\\s*void\\s+([a-zA-Z]+" +
@@ -163,42 +157,20 @@ public class Method {
             String arg = args[i].trim();
             VarInfo info = Variable.getInfo(arg);
             if (info != null) {
-                checkInfoMatch(info, lstOfArgs.get(i));
+                try {
+                    Variable.checkInfoMatch(info, lstOfArgs.get(i).getType());
+                } catch (Exception e){
+                    throw new MethodCalledException(e.getMessage());
+                }
             }
             else if (Variable.isALegalVariableName(arg)){
-                throw new MethodVariablesException(String.format(ERROR10, arg));
+                throw new MethodVariablesException(String.format(ERROR8, arg));
             }
             else if(!Variable.checkIfValueIsTheRightType(arg, lstOfArgs.get(i).getType())){
                 throw new MethodVariablesException(String.format(ERROR9, arg));
             }
         }
         return SUCCESS;
-    }
-
-    /**
-     * this function checks if the parameter given in a function call matches the parameter in the argument list
-     * throws an exception if false
-     * @param callInfo-VarInfo of called parameter
-     * @param argInfo- VarInfo of the argument
-     */
-    private static void checkInfoMatch(VarInfo callInfo, VarInfo argInfo) throws MethodVariablesException {
-        if (!callInfo.isInitialized()) throw new MethodVariablesException(
-                String.format(ERROR8, callInfo.getName()));
-        String destType = argInfo.getType();
-        switch (callInfo.getType()) {
-            case INT:
-                if(destType.equals(INT) || destType.equals(DOUBLE) || destType.equals(BOOLEAN)) return;
-            case DOUBLE:
-                if(destType.equals(DOUBLE) || destType.equals(BOOLEAN)) return;
-            case BOOLEAN:
-                if(destType.equals(BOOLEAN)) return;
-            case STRING:
-                if(destType.equals(STRING)) return;
-            case CHAR:
-                if(destType.equals(CHAR)) return;
-        }
-        throw new MethodVariablesException(
-                String.format(ERROR9, callInfo.getName()));
     }
 
     /**

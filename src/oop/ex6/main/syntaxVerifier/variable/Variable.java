@@ -15,7 +15,8 @@ public class Variable{
     private static final String ERROR4 = "the value doesn't match the type required";
     private static final String ERROR5 = "the variable given doesn't exist";
     private static final String ERROR6 = "the variable can't be assigned because its a Final variable";
-    private static final String ERROR7 = "the variable given hasn't being initialized";
+    private static final String ERROR7 = "variable %s type was incorrect";
+    private static final String ERROR8 = "variable %s wasn't initialized";
 
     // Types allowed:
     private static final String INT = "int";
@@ -85,7 +86,7 @@ public class Variable{
                         listOfArgs.get(scope).put(matcher.group(1), info);
                         continue;
                     }catch (GeneralVariableException e){
-                        throw new InitializeVariableException(e.getMessage());
+                        throw new InitializeVariableValueException(e.getMessage());
                     }
                 }else{
                     throw new InitializeVariableException(ERROR3);
@@ -127,8 +128,32 @@ public class Variable{
             }
         }
         if(varInfo == null) throw new GeneralVariableException(ERROR5);
-        if(!varInfo.getType().equals(type)) throw new GeneralVariableException(ERROR4);
-        if(!varInfo.isInitialized()) throw new GeneralVariableException(ERROR7);
+        Variable.checkInfoMatch(varInfo, type);
+    }
+
+    /**
+     * this function checks if the parameter given is legal to be assigned
+     * throws an exception if false
+     * @param callInfo-VarInfo of called parameter
+     * @param destType- String
+     */
+    public static void checkInfoMatch(VarInfo callInfo, String destType) throws GeneralVariableException {
+        if (!callInfo.isInitialized()) throw new GeneralVariableException(
+                String.format(ERROR8, callInfo.getName()));
+        switch (callInfo.getType()) {
+            case INT:
+                if(destType.equals(INT) || destType.equals(DOUBLE) || destType.equals(BOOLEAN)) return;
+            case DOUBLE:
+                if(destType.equals(DOUBLE) || destType.equals(BOOLEAN)) return;
+            case BOOLEAN:
+                if(destType.equals(BOOLEAN)) return;
+            case STRING:
+                if(destType.equals(STRING)) return;
+            case CHAR:
+                if(destType.equals(CHAR)) return;
+        }
+        throw new GeneralVariableException(
+                String.format(ERROR7, callInfo.getName()));
     }
 
     /**
