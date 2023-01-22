@@ -17,6 +17,7 @@ public class Variable{
     private static final String ERROR6 = "the variable can't be assigned because its a Final variable";
     private static final String ERROR7 = "variable %s type was incorrect";
     private static final String ERROR8 = "variable %s wasn't initialized";
+    private static final String ERROR9 = "final variable must be initialized";
 
     // Types allowed:
     private static final String INT = "int";
@@ -97,7 +98,8 @@ public class Variable{
                 if(listOfArgs.get(scope).containsKey(matcher.group(1))){
                     throw new InitializeVariableException(ERROR3);
                 }
-                var info = new VarInfo(matcher.group(1), type,false, isFinal);
+                if(isFinal) throw new InitializeVariableException(ERROR9);
+                var info = new VarInfo(matcher.group(1), type,false, false);
                 listOfArgs.get(scope).put(matcher.group(1), info);
                 continue;
             }
