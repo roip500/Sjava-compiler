@@ -1,4 +1,7 @@
-package oop.ex6.main.syntaxVerifier;
+package oop.ex6.main.syntaxVerifier.method;
+
+import oop.ex6.main.syntaxVerifier.variable.VarInfo;
+import oop.ex6.main.syntaxVerifier.variable.Variable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,9 +10,20 @@ import java.util.regex.Pattern;
 
 public class Method {
 
+    //exceptions text:
+    private static final String ERROR1 = "line doesn't match the legal format for initializing a method";
+    private static final String ERROR2 = "method name already used in code";
+    private static final String ERROR3 = "invalid variable declared in method declaration";
+    private static final String ERROR4 = "invalid method declaration";
+    private static final String ERROR5 = "invalid text - has no meaning";
+    private static final String ERROR6 = "method doesn't exist";
+    private static final String ERROR7 = "number of variables passed to the method is incorrect";
+    private static final String ERROR8 = "variable %s wasn't initialized";
+    private static final String ERROR9 = "variable %s wasn't Final";
+    private static final String ERROR10 = "variable %s type was incorrect";
+
     //global:
     private static final int SUCCESS = 0;
-    private static final int FAILED = 1;
     private static final String INT = "int";
     private static final String DOUBLE = "double";
     private static final String STRING = "String";
@@ -35,17 +49,15 @@ public class Method {
      * @param line - String
      * @return - true if yes, false if no
      */
-    public static boolean addMethod(String line) {
+    public static boolean addMethod(String line) throws GeneralMethodException {
         line = line.trim();
         Matcher matcher = METHOD_DECLARATION_REGEX.matcher(line);
         if (!matcher.matches()) {
-            throw new IncorrectCodeExtensionException(
-                    "invalid method declaration");
+            throw new GeneralMethodException(ERROR1);
         }
         String methodName = matcher.group(1);
         if (methods.containsKey(methodName)) {
-            throw new IncorrectCodeExtensionException(
-                    "method name already used in code");
+            throw new MethodDeclarationException(ERROR2);
         }
         String argListWithParentheses = matcher.group(2);
         matcher = REMOVE_PARENTHESES_FROM_VAR_LIST.matcher(argListWithParentheses);
@@ -64,7 +76,7 @@ public class Method {
      * @param argList    - String. represents the variables
      * @return true if success, false if no
      */
-    private static boolean parseArgList(String methodName, String argList) {
+    private static boolean parseArgList(String methodName, String argList) throws MethodVariablesException {
         ArrayList<VarInfo> argListAndTypeInfo = new ArrayList<>();
         argList = argList.trim();
         Matcher matcher;
@@ -73,8 +85,7 @@ public class Method {
             group = group.trim();
             matcher = ARG_DEC_LINE_REGEX.matcher(group);
             if (!matcher.matches()) {
-                throw new IncorrectCodeExtensionException(
-                        "invalid arguments declared in method declaration");
+                throw new MethodVariablesException(ERROR3);
             }
             VarInfo varInfo = new VarInfo(matcher.group(3), matcher.group(2),
                     true, matcher.group(1) != null);
@@ -106,11 +117,10 @@ public class Method {
      * @param scope - integer
      * @return true if succeeds, false no
      */
-    public static boolean runMethod(String line, int scope) {
+    public static boolean runMethod(String line, int scope) throws GeneralMethodException {
         Matcher matcher = METHOD_DECLARATION_REGEX.matcher(line);
         if (!matcher.matches()) {
-            throw new IncorrectCodeExtensionException(
-                    "invalid method declaration");
+            throw new GeneralMethodException(ERROR4);
         }
         String methodName = matcher.group(1);
         Method.addArguments(methodName, scope);
@@ -123,27 +133,21 @@ public class Method {
      * @param line - String
      * @return - SUCCESS if everything is ok, FAILED if no
      */
-    public static int checkMethodCall(String line) {
+    public static int checkMethodCall(String line) throws GeneralMethodException {
         line = line.trim();
         Matcher matcher = VARIABLES_PASSED_TO_METHOD_REGEX.matcher(line);
         if (!matcher.matches()) {
-            // TODO: exception - line has no meaning
-            throw new IncorrectCodeExtensionException(
-                    "invalid text - has no meaning");
+            throw new GeneralMethodException(ERROR5);
         }
         String name = matcher.group(1);
         if (!methods.containsKey(name)) {
-            // TODO: exception - method doesn't exist
-            throw new IncorrectCodeExtensionException(
-                    "method doesn't exist");
+            throw new MethodCalledException(ERROR6);
         }
         var lstOfArgs = methods.get(name);
         int size = lstOfArgs.size();
         String[] args = matcher.group(2).split(",");
         if (args.length != size) {
-            // TODO: exception - num of variables passed doesn't match request
-            throw new IncorrectCodeExtensionException(
-                    "number of variables passed to the method is incorrect");
+            throw new MethodVariablesException(ERROR7);
         }
         for (int i = 0; i < size; i++) {
             String arg = args[i].trim();
@@ -152,9 +156,10 @@ public class Method {
                 checkInfoMatch(info, lstOfArgs.get(i));
             }
             else {
-                if (!Variable.checkIfValueIsTheRightType(arg, lstOfArgs.get(i).getType())) {
-                    // TODO: exception - value doesn't match type
-                    return FAILED;
+                try{
+                    Variable.checkIfValueIsTheRightType(arg, lstOfArgs.get(i).getType());
+                }catch (Exception e){
+                    throw new MethodVariablesException(e.getMessage());
                 }
             }
         }
@@ -163,14 +168,15 @@ public class Method {
 
     /**
      * this function checks if the parameter given in a function call matches the parameter in the argument list
+     * * throws an exception if false
      * @param callInfo-VarInfo of called parameter
      * @param argInfo- VarInfo of the argument
      */
-    private static void checkInfoMatch(VarInfo callInfo, VarInfo argInfo) {
-        if (!callInfo.isInitialized()) throw new IncorrectCodeExtensionException(
-                "variable wasn't initialized");
-        if (callInfo.isFinal() && !argInfo.isFinal()) throw new IncorrectCodeExtensionException(
-                "variable isn't Final");
+    private static void checkInfoMatch(VarInfo callInfo, VarInfo argInfo) throws MethodVariablesException {
+        if (!callInfo.isInitialized()) throw new MethodVariablesException(
+                String.format(ERROR8, callInfo.getName()));
+        if (callInfo.isFinal() && !argInfo.isFinal()) throw new MethodVariablesException(
+                String.format(ERROR9, callInfo.getName()));
         String destType = argInfo.getType();
         switch (callInfo.getType()) {
             case INT:
@@ -184,7 +190,7 @@ public class Method {
             case CHAR:
                 if(destType.equals(CHAR)) return;
         }
-        throw new IncorrectCodeExtensionException(
-                "variable type isn't correct");
+        throw new MethodVariablesException(
+                String.format(ERROR10, callInfo.getName()));
     }
 }

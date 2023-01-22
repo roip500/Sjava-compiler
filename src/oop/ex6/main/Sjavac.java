@@ -1,8 +1,8 @@
 package oop.ex6.main;
 
-import oop.ex6.main.syntaxVerifier.Method;
-import oop.ex6.main.syntaxVerifier.Variable;
-import oop.ex6.main.syntaxVerifier.WhileIf;
+import oop.ex6.main.syntaxVerifier.method.Method;
+import oop.ex6.main.syntaxVerifier.variable.Variable;
+import oop.ex6.main.syntaxVerifier.whileif.WhileIf;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -172,8 +172,8 @@ public class Sjavac {
             //TODO: throw a general line error
             return FAILED;
         }
-        catch (RuntimeException e){
-            System.err.println("line " + numOfLine +": " + e.getMessage());
+        catch (Exception e){
+            printException(e, numOfLine);
             return FAILED;
         }
     }
@@ -230,10 +230,19 @@ public class Sjavac {
             }
             return SUCCESS;
         }
-        catch (RuntimeException e){
-            System.err.println("line " + numOfLine +": " + e.getMessage());
+        catch (Exception e){
+            printException(e, numOfLine);
             return FAILED;
         }
+    }
+
+    /**
+     * function prints the exception
+     * @param e - exception
+     * @param numOfLine - Integer
+     */
+    private void printException(Exception e, int numOfLine){
+        System.err.println("line " + numOfLine + ": " + e.getMessage());
     }
 
     /**
@@ -241,7 +250,7 @@ public class Sjavac {
      * @param line - String
      * @return true if success, false if no
      */
-    private boolean startMethod(String line){
+    private boolean startMethod(String line) throws Exception {
         return Method.runMethod(line, scopeNum);
     }
 
@@ -260,14 +269,16 @@ public class Sjavac {
      * @param line string
      * @return true if succeeded, false if no
      */
-    private boolean variableCheck(String line){
+    private boolean variableCheck(String line) throws Exception {
         matcher = varInitializeRegex.matcher(line);
         if (matcher.matches()) {
-            return Variable.initializeVar(line, scopeNum, matcher.group(1) != null);
+            Variable.initializeVar(line, scopeNum, matcher.group(1) != null);
+            return true;
         }
         matcher = varAssignedRegex.matcher(line);
         if (matcher.matches()) {
-            return Variable.assignVar(line, scopeNum);
+            Variable.assignVar(line, scopeNum);
+            return true;
         }
         return false;
     }

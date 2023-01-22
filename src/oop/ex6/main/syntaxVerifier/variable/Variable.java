@@ -1,4 +1,4 @@
-package oop.ex6.main.syntaxVerifier;
+package oop.ex6.main.syntaxVerifier.variable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,15 @@ import java.util.regex.Pattern;
 
 
 public class Variable{
+
+    //exceptions text:
+    private static final String ERROR1 = "line is not a legal format";
+    private static final String ERROR2 = "there is a end of line mark in the middle of the line";
+    private static final String ERROR3 = "parameter name already exists in the scope";
+    private static final String ERROR4 = "the value doesn't match the type required";
+    private static final String ERROR5 = "the variable given doesn't exist";
+    private static final String ERROR6 = "the variable can't be assigned because its a Final variable";
+    private static final String ERROR7 = "the variable given hasn't being initialized";
 
     // Types allowed:
     private static final String INT = "int";
@@ -34,28 +43,26 @@ public class Variable{
             "^(?:[a-zA-Z]+\\w*|_\\w+)\\s*$");
 
     //other variables:
-    private static final ArrayList<HashMap<String, VarInfo>> listOfArgs = new ArrayList<>();
-    private static final ArrayList<String> initialisedInMethod = new ArrayList<>();
+    private static final ArrayList<HashMap<String, VarInfo>> listOfArgs= new ArrayList<>();
     private static Matcher matcher;
 
     /**
      * checks that a line that initializes a variable is legal
-     * @param line - String
+     * throws an exception if false
+     * @param line  - String
      * @param scope - int represents the scope the variable is in
-     * @return true if legal, false no
      */
-    public static boolean initializeVar(String line, int scope, boolean isFinal){
+    public static void initializeVar(String line, int scope, boolean isFinal) throws GeneralVariableException {
         String newLine = line.trim();
-        String[] splitedLine = newLine.split("\\s", 2);
-        if(splitedLine[0].equals(FINAL)){
-            splitedLine[1] = splitedLine[1].trim();
-            splitedLine = splitedLine[1].split("\\s", 2);
+        String[] splitLine = newLine.split("\\s", 2);
+        if(splitLine[0].equals(FINAL)){
+            splitLine[1] = splitLine[1].trim();
+            splitLine = splitLine[1].split("\\s", 2);
         }
-        String type = splitedLine[0];
-        String[] allGroups = splitedLine[1].split(",");
+        String type = splitLine[0];
+        String[] allGroups = splitLine[1].split(",");
         if(allGroups.length == 0){
-            // TODO: throw exception no variable declared
-            return false;
+            throw new GeneralVariableException(ERROR1);
         }
         Matcher matcher;
         for(int i = 0; i < allGroups.length ;i++){
@@ -63,8 +70,7 @@ public class Variable{
             matcher = END_REGEX.matcher(group);
             if(matcher.matches()) {
                 if(i < allGroups.length -1  || matcher.group(1) == null) {
-                    // TODO: throw exception ; in middle of row
-                    return false;
+                    throw new GeneralVariableException(ERROR2);
                 }
                 group = matcher.group(1);
             }
@@ -72,17 +78,16 @@ public class Variable{
             if(matcher.matches()){
                 String value = matcher.group(2).trim();
                 if(!listOfArgs.get(scope).containsKey(matcher.group(1))){
-                    if(valueLegit(value, scope, type)){
+                    try {
+                        valueLegit(value, scope, type);
                         var info = new VarInfo(matcher.group(1), type, true, isFinal);
                         listOfArgs.get(scope).put(matcher.group(1), info);
                         continue;
-                    } else{
-                        // TODO: throw exception value not ok
-                        return false;
+                    }catch (GeneralVariableException e){
+                        throw new InitializeVariableException(e.getMessage());
                     }
                 }else{
-                    // TODO: throw exception exists already in my scope
-                    return false;
+                    throw new InitializeVariableException(ERROR3);
                 }
             }
             matcher = VAR_WITHOUT_INITIALIZE_REGEX.matcher(group);
@@ -91,27 +96,24 @@ public class Variable{
                 listOfArgs.get(scope).put(matcher.group(1), info);
                 continue;
             }
-            // TODO: exception doesn't match any regex
-            return false;
+            throw new GeneralVariableException(ERROR1);
         }
-        return true;
     }
 
     /**
      * checks that the value is the same type and in the right format
+     * throws an exception if false
      * @param value - String
      * @param scope - integer
      * @param type - String
-     * @return true if the value fits the type, false if not
      */
-    private static boolean valueLegit(String value, int scope, String type) {
+    private static void valueLegit(String value, int scope, String type) throws GeneralVariableException {
         if(Variable.checkIfValueIsTheRightType(value, type)){
-            return true;
+            return;
         }
         matcher = LEGIT_NAME_REGEX.matcher(value);
         if(!matcher.matches()){
-            //TODO: exception value type is not correct
-            return false;
+            throw new GeneralVariableException(ERROR4);
         }
         VarInfo varInfo = null;
         for(int i =scope; i>-1; i--){
@@ -120,12 +122,10 @@ public class Variable{
                 break;
             }
         }
-        if (varInfo != null && varInfo.getType().equals(type) && varInfo.isInitialized()) {
-            return true;
-        }
-        //TODO: exception object doesn't exist
-        // TODO: need to check if object does exists but not initialized
-        return false;
+        if(varInfo == null) throw new GeneralVariableException(ERROR5);
+        if(!varInfo.getType().equals(type)) throw new GeneralVariableException(ERROR4);
+        if(!varInfo.isInitialized()) throw new GeneralVariableException(ERROR7);
+        return;
     }
 
     /**
@@ -138,49 +138,33 @@ public class Variable{
         switch (type) {
             case (INT): {
                 matcher = VALUE_IS_INT_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 break;
             }
             case (DOUBLE): {
                 matcher = VALUE_IS_DOUBLE_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 matcher = VALUE_IS_INT_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 break;
             }
             case (CHAR): {
                 matcher = VALUE_IS_CHAR_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 break;
             }
             case (BOOLEAN): {
                 matcher = VALUE_IS_BOOLEAN_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 matcher = VALUE_IS_DOUBLE_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 matcher = VALUE_IS_INT_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 break;
             }
             case (STRING): {
                 matcher = VALUE_IS_STRING_REGEX.matcher(value);
-                if (matcher.matches()) {
-                    return true;
-                }
+                if (matcher.matches()) return true;
                 break;
             }
         }
@@ -189,11 +173,11 @@ public class Variable{
 
     /**
      * checks if teh object has being initialized and if the value is the same type.
-     * @param line - String
+     * throws an exception if false
+     * @param line  - String
      * @param scope - integer
-     * @return true if all is ok, false if something is wrong
      */
-    public static boolean assignVar(String line, int scope){
+    public static void assignVar(String line, int scope) throws GeneralVariableException {
         line = line.trim();
         String[] groups = line.split(",");
         Matcher matcher;
@@ -208,40 +192,26 @@ public class Variable{
                        break;
                    }
                }
-               if (varInfo == null) {
-                   //TODO: exception object doesn't exist
-                   return false;
-               }
-               if (varInfo.isFinal()) {
-                   //TODO: object is final
-                   return false;
-               }
+               if (varInfo == null) throw new AssignVariableException(ERROR5);
+               if (varInfo.isFinal()) throw new AssignVariableException(ERROR6);
                String value = matcher.group(2);
-               // TODO: maybe check in a different place to throw a more accurate exception
                matcher = END_REGEX.matcher(value);
                if(matcher.matches()) {
-                   if(matcher.group(1) == null) {
-                       // TODO: throw exception ; in middle of row
-                       return false;
-                   }
+                   if(matcher.group(1) == null) throw new GeneralVariableException(ERROR2);
                    value = matcher.group(1);
                }
-               if (!valueLegit(value, scope, varInfo.getType())) {
-                   //TODO: value not legit
-                   return false;
-               }
-               if(!varInfo.isInitialized() && i == 0){
-                   initialisedInMethod.add(matcher.group(1));
-               }
+               try{
+               valueLegit(value, scope, varInfo.getType());
                varInfo.setInitialized();
                listOfArgs.get(i).put(matcher.group(1), varInfo);
+               }catch (GeneralVariableException e){
+                   throw new AssignVariableValueException(e.getMessage());
+               }
            }
            else {
-               //TODO: invalid syntax
-               return false;
+               throw new GeneralVariableException(ERROR1);
            }
         }
-        return true;
     }
 
     /**
@@ -289,10 +259,4 @@ public class Variable{
         listOfArgs.get(scope).put(name, info);
     }
 
-    public static void removeAssignmentsAtEndOfMethod(){
-        for (String varName : initialisedInMethod){
-            VarInfo varInfo = listOfArgs.get(0).get(varName);
-            varInfo.deAssign();
-        }
-    }
 }

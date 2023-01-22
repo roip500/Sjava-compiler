@@ -17,4 +17,3 @@ void foo2(){
        return;
 }
 
-//TODO: fix exception
