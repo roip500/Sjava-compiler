@@ -19,9 +19,8 @@ public class Method {
     private static final String ERROR6 = "method doesn't exist";
     private static final String ERROR7 = "number of variables passed to the method is incorrect";
     private static final String ERROR8 = "variable %s wasn't initialized";
-    private static final String ERROR9 = "variable %s wasn't Final";
-    private static final String ERROR10 = "variable %s type was incorrect";
-    private static final String ERROR11 = "variable %s doesn't exist";
+    private static final String ERROR9 = "variable %s type was incorrect";
+    private static final String ERROR10 = "variable %s doesn't exist";
 
     //global:
     private static final int SUCCESS = 0;
@@ -151,9 +150,15 @@ public class Method {
         if (!methods.containsKey(name)) {
             throw new MethodCalledException(ERROR6);
         }
+        String vars = matcher.group(2);
         var lstOfArgs = methods.get(name);
+        if(lstOfArgs == null){
+            matcher = noArgumentsRegex.matcher(vars);
+            if(!matcher.matches()) throw new MethodVariablesException(ERROR7);
+            return SUCCESS;
+        }
         int size = lstOfArgs.size();
-        String[] args = matcher.group(2).split(",");
+        String[] args = vars.split(",");
         if (args.length != size) {
             throw new MethodVariablesException(ERROR7);
         }
@@ -164,10 +169,10 @@ public class Method {
                 checkInfoMatch(info, lstOfArgs.get(i));
             }
             else if (Variable.isALegalVariableName(arg)){
-                throw new MethodVariablesException(String.format(ERROR11, arg));
+                throw new MethodVariablesException(String.format(ERROR10, arg));
             }
             else if(!Variable.checkIfValueIsTheRightType(arg, lstOfArgs.get(i).getType())){
-                throw new MethodVariablesException(String.format(ERROR10, arg));
+                throw new MethodVariablesException(String.format(ERROR9, arg));
             }
         }
         return SUCCESS;
@@ -196,7 +201,7 @@ public class Method {
                 if(destType.equals(CHAR)) return;
         }
         throw new MethodVariablesException(
-                String.format(ERROR10, callInfo.getName()));
+                String.format(ERROR9, callInfo.getName()));
     }
 
     /**

@@ -7,7 +7,7 @@ Our design for the ex' was the following:
    in scope 0) and makes a list of all the methods that were created in the file.
    the second read goes into the methods and checks that all the variables are used correctly,
    that the if\while statements are legal and that all the calls to and inside a method are legal.
-   if any check ius false then an error is thrown. the class will catch the error and print to with
+   if any check is false then an error is thrown. the class will catch the error and print to with
    the line where the error happened.
 2. We created 3 classes, each one checking the properties of its kind:
    a - Variables: holds a list of hashmaps where each cell in the list is a scope, and the
@@ -23,26 +23,28 @@ Our design for the ex' was the following:
 
 
 the tests we created:
-1 -
-2 -
-3 -
-4 -
-5 -
+1 - checks the possibility of multiple variables with the same name but different
+    scopes (must return 0)
+2 - checks correct call to method with global and inner variables (must return 0)
+3 - check that the while method can only be called in a method (must return 1)
+4 - checks call to method with a variable from the wrong type (must return 1)
+5 - checks that the global variable that is initialized after the method call is
+    used inside the method (must return 0)
 6 -
-7 -
-8 -
-9 -
-10 -
-11 -
-12 -
-13 -
-14 -
-15 -
-16 -
-17 -
-18 -
-19 -
-20 -
+7 - checks legal if statement (must return 0)
+8 - checks the || sign in an if statement
+9 - checks the || and && sign in an if statement adn that the values given are legal
+10 - checks call to method with set values of type int, double and boolean
+11 - checks call to method with set values of type char and String
+12 - checks call to method with a variable that isn't created
+13 - checks call to method in global scope (must return 1)
+14 - checks call to method with a cast from int type to boolean type
+15 - checks initialization of a few variable in the same line
+16 - checks assignment of a few variable in the same line
+17 - checks that 2 global variables can't have the same name (must return 1)
+18 - checks method with no return statement
+19 - checks legal uses of Final variable (must return 0)
+20 - checks assignment to Final variable (must return 1)
 
 
 the questions:
@@ -50,7 +52,7 @@ the questions:
 
 6.1 - As we wrote above we handled the errors by throwing exceptions from the 3 classes to the
       main class, which then caught it and printed them out with the line and it number. this
-      helped simplify the presses cause throwing the exception minimized the usage of returning
+      helped simplify the process cause throwing the exception minimized the usage of returning
       values and allows our code to be more efficient.
 
 
@@ -60,7 +62,7 @@ the questions:
         the first step would be to clarify the legal way to write a value of such type, and that
         would allow us to write a regex that would be able to state whether or not the object fits
         the type. the we will need to add a case to our function "checkIfValueIsTheRightType" which
-        is the only function that checks if a value if from a specific type.
+        is the only function that checks if a value is from a specific type.
         all the rest of the code is generic to the types of values so there is no need to change any
         of it.
 
