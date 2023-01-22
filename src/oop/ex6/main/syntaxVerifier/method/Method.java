@@ -45,11 +45,10 @@ public class Method {
 
     /**
      * adds a method declaration - checks that the method was declared ok
-     *
+     * if false then the function throws an exception
      * @param line - String
-     * @return - true if yes, false if no
      */
-    public static boolean addMethod(String line) throws GeneralMethodException {
+    public static void addMethod(String line) throws GeneralMethodException {
         line = line.trim();
         Matcher matcher = METHOD_DECLARATION_REGEX.matcher(line);
         if (!matcher.matches()) {
@@ -61,24 +60,23 @@ public class Method {
         }
         String argListWithParentheses = matcher.group(2);
         matcher = REMOVE_PARENTHESES_FROM_VAR_LIST.matcher(argListWithParentheses);
-        if (!matcher.matches()) return false;
+        if (!matcher.matches()) return;
         String args = matcher.group(1);
         matcher = noArgumentsRegex.matcher(args);
         if (matcher.matches()) {
             methods.put(methodName, null);
-            return true;
+            return;
         }
-        return parseArgList(methodName, args);
+        parseArgList(methodName, args);
     }
 
     /**
      * checks the variables assigned to the method. if yes the variables are saved to the map
-     *
+     * if false then the function throws an exception
      * @param methodName - String. will be the key in the map
      * @param argList    - String. represents the variables
-     * @return true if success, false if no
      */
-    private static boolean parseArgList(String methodName, String argList) throws MethodVariablesException {
+    private static void parseArgList(String methodName, String argList) throws MethodVariablesException {
         ArrayList<VarInfo> argListAndTypeInfo = new ArrayList<>();
         argList = argList.trim();
         Matcher matcher;
@@ -99,12 +97,11 @@ public class Method {
             argListAndTypeInfo.add(varInfo);
         }
         methods.put(methodName, argListAndTypeInfo);
-        return true;
     }
 
     /**
      * adds all the functions inputs to the list of Variables in the functions scope
-     *
+     * if false then the function throws an exception
      * @param name  - String
      * @param scope - integer
      */
@@ -119,7 +116,7 @@ public class Method {
 
     /**
      * adds a new scope with the variables given to the function
-     *
+     * if false then the function throws an exception
      * @param line  - String
      * @param scope - integer
      * @return true if succeeds, false no
@@ -136,7 +133,7 @@ public class Method {
 
     /**
      * checks if the method exists, if yes checks that the variables that were sent were initialized
-     *
+     * if false then the function throws an exception
      * @param line - String
      * @return - SUCCESS if everything is ok, FAILED if no
      */
@@ -180,7 +177,7 @@ public class Method {
 
     /**
      * this function checks if the parameter given in a function call matches the parameter in the argument list
-     * * throws an exception if false
+     * throws an exception if false
      * @param callInfo-VarInfo of called parameter
      * @param argInfo- VarInfo of the argument
      */
