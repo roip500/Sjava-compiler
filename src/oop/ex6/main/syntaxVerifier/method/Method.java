@@ -10,6 +10,15 @@ import java.util.regex.Pattern;
 
 public class Method {
 
+    //exceptions text:
+    private static final String ERROR1 = "line doesn't match the legal format for nitializing a method";
+    private static final String ERROR2 = "method name already used in code";
+    private static final String ERROR3 = "invalid variable declared in method declaration";
+    private static final String ERROR4 = "invalid method declaration";
+    private static final String ERROR5 = "invalid text - has no meaning";
+    private static final String ERROR6 = "method doesn't exist";
+    private static final String ERROR7 = "number of variables passed to the method is incorrect";
+
     //global:
     private static final int SUCCESS = 0;
     private static final int FAILED = 1;
@@ -42,13 +51,11 @@ public class Method {
         line = line.trim();
         Matcher matcher = METHOD_DECLARATION_REGEX.matcher(line);
         if (!matcher.matches()) {
-            throw new GeneralMethodException(
-                    "line doesn't match the legal format for nitializing a method");
+            throw new GeneralMethodException(ERROR1);
         }
         String methodName = matcher.group(1);
         if (methods.containsKey(methodName)) {
-            throw new MethodDeclarationException(
-                    "method name already used in code");
+            throw new MethodDeclarationException(ERROR2);
         }
         String argListWithParentheses = matcher.group(2);
         matcher = REMOVE_PARENTHESES_FROM_VAR_LIST.matcher(argListWithParentheses);
@@ -76,8 +83,7 @@ public class Method {
             group = group.trim();
             matcher = ARG_DEC_LINE_REGEX.matcher(group);
             if (!matcher.matches()) {
-                throw new MethodVariablesException(
-                        "invalid variable declared in method declaration");
+                throw new MethodVariablesException(ERROR3);
             }
             VarInfo varInfo = new VarInfo(matcher.group(3), matcher.group(2),
                     true, matcher.group(1) != null);
@@ -112,8 +118,7 @@ public class Method {
     public static boolean runMethod(String line, int scope) throws GeneralMethodException {
         Matcher matcher = METHOD_DECLARATION_REGEX.matcher(line);
         if (!matcher.matches()) {
-            throw new GeneralMethodException(
-                    "invalid method declaration");
+            throw new GeneralMethodException(ERROR4);
         }
         String methodName = matcher.group(1);
         Method.addArguments(methodName, scope);
@@ -130,20 +135,17 @@ public class Method {
         line = line.trim();
         Matcher matcher = VARIABLES_PASSED_TO_METHOD_REGEX.matcher(line);
         if (!matcher.matches()) {
-            throw new GeneralMethodException(
-                    "invalid text - has no meaning");
+            throw new GeneralMethodException(ERROR5);
         }
         String name = matcher.group(1);
         if (!methods.containsKey(name)) {
-            throw new MethodCalledException(
-                    "method doesn't exist");
+            throw new MethodCalledException(ERROR6);
         }
         var lstOfArgs = methods.get(name);
         int size = lstOfArgs.size();
         String[] args = matcher.group(2).split(",");
         if (args.length != size) {
-            throw new MethodVariablesException(
-                    "number of variables passed to the method is incorrect");
+            throw new MethodVariablesException(ERROR7);
         }
         for (int i = 0; i < size; i++) {
             String arg = args[i].trim();
@@ -188,4 +190,6 @@ public class Method {
         throw new MethodVariablesException(
                 "variable "+ callInfo.getName() +" type isn't correct");
     }
+
+    //TODO: talk to omer about this
 }

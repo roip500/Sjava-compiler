@@ -236,11 +236,7 @@ public class Sjavac {
     }
 
     private void printException(Exception e, int numOfLine){
-        StringBuilder strToPrint = new StringBuilder("line " + numOfLine + ": " + e.getMessage() + "\n");
-        for (var txt: e.getStackTrace()) {
-            strToPrint.append(txt).append("\n");
-        }
-        System.err.println(strToPrint);
+        System.err.println("line " + numOfLine + ":\n" + e.getMessage());
     }
 
     /**
