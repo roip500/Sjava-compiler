@@ -44,6 +44,7 @@ public class Variable{
 
     //other variables:
     private static final ArrayList<HashMap<String, VarInfo>> listOfArgs= new ArrayList<>();
+    private static final ArrayList<String> initialisedInMethod = new ArrayList<>();
     private static Matcher matcher;
 
     /**
@@ -202,6 +203,9 @@ public class Variable{
                }
                try{
                valueLegit(value, scope, varInfo.getType());
+               if(!varInfo.isInitialized() && i == 0){
+                   initialisedInMethod.add(matcher.group(1));
+               }
                varInfo.setInitialized();
                listOfArgs.get(i).put(matcher.group(1), varInfo);
                }catch (GeneralVariableException e){
@@ -257,6 +261,17 @@ public class Variable{
      */
     public static void addVariable(String name, VarInfo info, int scope){
         listOfArgs.get(scope).put(name, info);
+    }
+
+    /**
+     * function resets all the global variables
+     */
+    public static void removeAssignmentsAtEndOfMethod(){
+        for (String varName : initialisedInMethod){
+            VarInfo varInfo = listOfArgs.get(0).get(varName);
+            varInfo.deAssign();
+        }
+        initialisedInMethod.clear();
     }
 
 }

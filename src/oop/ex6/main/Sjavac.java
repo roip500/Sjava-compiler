@@ -12,6 +12,14 @@ import java.util.regex.Pattern;
 
 public class Sjavac {
 
+    //exceptions text:
+    private static final String ERROR1 = "line doesn't contain an end of line mark";
+    private static final String ERROR2 = "to many }.";
+    private static final String ERROR3 = "not allowed to call a while/if function outside a method";
+    private static final String ERROR4 = "used a return statement outside a method";
+    private static final String ERROR5 = "line doesn't fit any legal pattern";
+    private static final String ERROR6 = "method doesn't end with a return line";
+
     //global:
     private static final int SUCCESS = 0;
     private static final int FAILED = 1;
@@ -129,18 +137,11 @@ public class Sjavac {
             }
             line = line.trim();
             matcher = endOfLineRegex.matcher(line);
-            if (!matcher.matches()) {
-                //TODO: throw an error
-                System.out.println(1);
-                return FAILED;
-            }
+            if (!matcher.matches()) throw new GeneralSJavaException(ERROR1);
             matcher = endOfScopeRegex.matcher(line);
             if (matcher.matches()) {
                 scopeNum--;
-                if (scopeNum < 0) {
-                    //TODO: throw exception
-                    return FAILED;
-                }
+                if (scopeNum < 0) throw new GeneralSJavaException(ERROR2);
                 return SUCCESS;
             }
             matcher = ifWhileRegex.matcher(line);
@@ -149,28 +150,23 @@ public class Sjavac {
                     scopeNum++;
                     return SUCCESS;
                 }
-                //TODO: throw exception
-                return FAILED;
+                throw new GeneralSJavaException(ERROR3);
             }
             matcher = returnStatementRegex.matcher(line);
             if (matcher.matches() && scopeNum == 0) {
-                //TODO: throw exception
-                return FAILED;
+                throw new GeneralSJavaException(ERROR4);
             }
             if (scopeNum > 0) return SUCCESS;
             matcher = methodRegex.matcher(line);
             if (matcher.matches()) {
                 scopeNum++;
-                if (!Method.addMethod(line)) {
-                    return FAILED;
-                }
+                Method.addMethod(line);
                 return SUCCESS;
             }
             if (variableCheck(line)) {
                 return SUCCESS;
             }
-            //TODO: throw a general line error
-            return FAILED;
+            throw new GeneralSJavaException(ERROR5);
         }
         catch (Exception e){
             printException(e, numOfLine);
@@ -219,8 +215,7 @@ public class Sjavac {
                     if(scopeNum == 0) Variable.removeAssignmentsAtEndOfMethod();
                     return SUCCESS;
                 }
-                //TODO: exception - no return value at the end
-                return FAILED;
+                throw new GeneralSJavaException(ERROR6);
             }
             if (scopeNum != 0) {
                 if (variableCheck(line)) {

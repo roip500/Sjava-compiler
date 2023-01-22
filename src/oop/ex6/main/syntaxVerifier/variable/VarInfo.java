@@ -1,6 +1,7 @@
 package oop.ex6.main.syntaxVerifier.variable;
 
 public class VarInfo {
+
     /**
      * class that holds the information on the variable
      */
