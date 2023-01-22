@@ -78,20 +78,26 @@ the questions:
 
         how would we implement Class?
         we would need to create a class function that would be in charge of checking all the rules regarding
-        classes. this class will also have a hashmap that will have names of classes as its keys, and for value
-        it would have a list of lists. the first list will hold all the abjects initialized in the class. the
-        second list will hold all the methods the class has. we would need to implement a private and public
-        kind of method in the Method class and when calling a method that belongs to a class we would check
-        if its public or private and act accordingly.
+        classes. this class will also have a hashmap that will have names of classes as its keys, and for
+        value it would have a list of lists. the first list will hold all the abjects initialized in the
+        class. the second list will hold all the methods the class has. we would need to implement a private
+        and public kind of method in the Method class and when calling a method that belongs to a class we
+        would check if its public or private and act accordingly.
 
 
-6.3 - the first regex was used to check if the line is a initialization of a variable:
-      "^([a-zA-Z]+\\w*|_\\w+)\\s*=\\s*(.*)\\s*$"
+6.3 - the first regex was used to check if the line is a declaration of a method:
+      "^\\s*void\\s+([a-zA-Z]+\\w*)\\s*([(](?:\\s*(?:final\\s*)?\\w+\\s+\\w+\\s*,?)*\\s*[)])\\s*[{]$"
+      this regex validates that the whole line of the declaration matches the legal template of declaring a
+      method and also helps us get the argument list of the method using capturing groups. if the variable
+      list is legal according to the Sjava rules is checked separately one argument at a time.
 
 
       the second regex was used to check the while if statement:
       ^(?:if|while)\\s*[(](\\s*(?:(?:true|false|\\w+|[+\\-]?(?:\\d+\\.?\\d*|\\d*\\.\\d+))+\\s*
       (?:\\|\\||&&)?\\s*)+\\s*)[)]\\s*[{]$"
+      this regex checks all of the if or while condition and checks if it matches the legal template. it can
+      check multiple && and || condition and checking if each value in the if or while condition is checked
+      separately afterwards.
 
 
 
