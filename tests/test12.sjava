@@ -11,3 +11,10 @@ void foo(int param1){
 }
 
 int param1 = 5;
+
+void foo2(){
+       foo(param1);
+       return;
+}
+
+//TODO: says there is a bug
