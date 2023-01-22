@@ -30,7 +30,7 @@ the tests we created:
 4 - checks call to method with a variable from the wrong type (must return 1)
 5 - checks that the global variable that is initialized after the method call is
     used inside the method (must return 0)
-6 -
+6 - checks that boolean variable can be assigned by integer variable (must return 0)
 7 - checks legal if statement (must return 0)
 8 - checks the || sign in an if statement
 9 - checks the || and && sign in an if statement adn that the values given are legal
