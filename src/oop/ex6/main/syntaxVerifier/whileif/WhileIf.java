@@ -1,4 +1,9 @@
-package oop.ex6.main.syntaxVerifier;
+package oop.ex6.main.syntaxVerifier.whileif;
+
+import oop.ex6.main.syntaxVerifier.GeneralWhileIfException;
+import oop.ex6.main.syntaxVerifier.variable.VarInfo;
+import oop.ex6.main.syntaxVerifier.variable.Variable;
+import oop.ex6.main.syntaxVerifier.WhileIfVariableException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,10 +24,10 @@ public class WhileIf {
      * @param scope- the scope of the if or while
      * @return true if its valid and false if not
      */
-    public static boolean checkIfWhile(String line, int scope){
+    public static boolean checkIfWhile(String line, int scope) throws GeneralWhileIfException {
         Matcher matcher = ifWhileRegex.matcher(line);
         if(!matcher.matches()){
-            throw new IncorrectCodeExtensionException(
+            throw new GeneralWhileIfException(
                     "if statement doesn't match the legal format");
         }
         String [] args = matcher.group(1).split("\\|\\||&&");
@@ -31,16 +36,16 @@ public class WhileIf {
             if(checkGenericConditions(arg)) continue;
             VarInfo info  = Variable.getInfo(arg);
             if(info == null){
-                throw new IncorrectCodeExtensionException(
+                throw new WhileIfVariableException(
                         "parameter given doesn't exist");
             }
             if(!info.isInitialized()){
-                throw new IncorrectCodeExtensionException(
+                throw new WhileIfVariableException(
                         "parameter given isn't initialized");
             }
             String varType = info.getType();
             if(varType.equals(CHAR) || varType.equals(STRING)){
-                throw new IncorrectCodeExtensionException(
+                throw new WhileIfVariableException(
                         "the parameter given type doesn't match the required type");
             }
         }

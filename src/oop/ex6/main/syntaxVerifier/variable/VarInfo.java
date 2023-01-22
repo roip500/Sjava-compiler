@@ -1,4 +1,4 @@
-package oop.ex6.main.syntaxVerifier;
+package oop.ex6.main.syntaxVerifier.variable;
 
 public class VarInfo {
     /**

@@ -1,13 +1,12 @@
 package oop.ex6.main;
 
-import oop.ex6.main.syntaxVerifier.Method;
-import oop.ex6.main.syntaxVerifier.Variable;
-import oop.ex6.main.syntaxVerifier.WhileIf;
+import oop.ex6.main.syntaxVerifier.method.Method;
+import oop.ex6.main.syntaxVerifier.variable.Variable;
+import oop.ex6.main.syntaxVerifier.whileif.WhileIf;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -173,12 +172,8 @@ public class Sjavac {
             //TODO: throw a general line error
             return FAILED;
         }
-        catch (RuntimeException e){
-            StringBuilder strToPrint = new StringBuilder("line " + numOfLine + ": " + e.getMessage() + "\n");
-            for (var txt: e.getStackTrace()) {
-                strToPrint.append(txt + "\n");
-            }
-            System.err.println(strToPrint);
+        catch (Exception e){
+            printException(e, numOfLine);
             return FAILED;
         }
     }
@@ -234,14 +229,18 @@ public class Sjavac {
             }
             return SUCCESS;
         }
-        catch (RuntimeException e){
-            StringBuilder strToPrint = new StringBuilder("line " + numOfLine + ": " + e.getMessage() + "\n");
-            for (var txt: e.getStackTrace()) {
-                strToPrint.append(txt + "\n");
-            }
-            System.err.println(strToPrint);
+        catch (Exception e){
+            printException(e, numOfLine);
             return FAILED;
         }
+    }
+
+    private void printException(Exception e, int numOfLine){
+        StringBuilder strToPrint = new StringBuilder("line " + numOfLine + ": " + e.getMessage() + "\n");
+        for (var txt: e.getStackTrace()) {
+            strToPrint.append(txt).append("\n");
+        }
+        System.err.println(strToPrint);
     }
 
     /**
@@ -249,7 +248,7 @@ public class Sjavac {
      * @param line - String
      * @return true if success, false if no
      */
-    private boolean startMethod(String line){
+    private boolean startMethod(String line) throws Exception {
         return Method.runMethod(line, scopeNum);
     }
 

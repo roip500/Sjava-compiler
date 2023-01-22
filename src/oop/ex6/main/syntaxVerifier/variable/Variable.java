@@ -1,4 +1,4 @@
-package oop.ex6.main.syntaxVerifier;
+package oop.ex6.main.syntaxVerifier.variable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,13 +45,13 @@ public class Variable{
      */
     public static boolean initializeVar(String line, int scope, boolean isFinal){
         String newLine = line.trim();
-        String[] splitedLine = newLine.split("\\s", 2);
-        if(splitedLine[0].equals(FINAL)){
-            splitedLine[1] = splitedLine[1].trim();
-            splitedLine = splitedLine[1].split("\\s", 2);
+        String[] splitLine = newLine.split("\\s", 2);
+        if(splitLine[0].equals(FINAL)){
+            splitLine[1] = splitLine[1].trim();
+            splitLine = splitLine[1].split("\\s", 2);
         }
-        String type = splitedLine[0];
-        String[] allGroups = splitedLine[1].split(",");
+        String type = splitLine[0];
+        String[] allGroups = splitLine[1].split(",");
         if(allGroups.length == 0){
             // TODO: throw exception no variable declared
             return false;
