@@ -19,6 +19,7 @@ public class Sjavac {
     private static final String ERROR4 = "used a return statement outside a method";
     private static final String ERROR5 = "line doesn't fit any legal pattern";
     private static final String ERROR6 = "method doesn't end with a return line";
+    private static final String ERROR7 = "not allowed to call a method outside a method";
 
     //global:
     private static final int SUCCESS = 0;
@@ -165,6 +166,9 @@ public class Sjavac {
             }
             if (variableCheck(line)) {
                 return SUCCESS;
+            }
+            if(Method.checkMethodCall(line) == SUCCESS){
+                throw new GeneralSJavaException(ERROR7);
             }
             throw new GeneralSJavaException(ERROR5);
         }

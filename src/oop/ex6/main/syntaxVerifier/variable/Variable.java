@@ -42,6 +42,7 @@ public class Variable{
     private static final Pattern LEGIT_NAME_REGEX = Pattern.compile(
             "^(?:[a-zA-Z]+\\w*|_\\w+)\\s*$");
 
+
     //other variables:
     private static final ArrayList<HashMap<String, VarInfo>> listOfArgs= new ArrayList<>();
     private static final ArrayList<String> initialisedInMethod = new ArrayList<>();
@@ -92,7 +93,10 @@ public class Variable{
                 }
             }
             matcher = VAR_WITHOUT_INITIALIZE_REGEX.matcher(group);
-            if(matcher.matches()) {
+            if(matcher.matches() ) {
+                if(listOfArgs.get(scope).containsKey(matcher.group(1))){
+                    throw new InitializeVariableException(ERROR3);
+                }
                 var info = new VarInfo(matcher.group(1), type,false, isFinal);
                 listOfArgs.get(scope).put(matcher.group(1), info);
                 continue;
@@ -126,7 +130,6 @@ public class Variable{
         if(varInfo == null) throw new GeneralVariableException(ERROR5);
         if(!varInfo.getType().equals(type)) throw new GeneralVariableException(ERROR4);
         if(!varInfo.isInitialized()) throw new GeneralVariableException(ERROR7);
-        return;
     }
 
     /**
@@ -184,7 +187,8 @@ public class Variable{
         Matcher matcher;
         VarInfo varInfo = null;
         for(String group: groups){
-           matcher = VAR_WITH_INITIALIZE_REGEX.matcher(group);
+           group = group.trim();
+            matcher = VAR_WITH_INITIALIZE_REGEX.matcher(group);
            if(matcher.matches()) {
                int i;
                for (i = scope; i > -1; i--) {
@@ -202,13 +206,12 @@ public class Variable{
                    value = matcher.group(1);
                }
                try{
-               valueLegit(value, scope, varInfo.getType());
-               if(!varInfo.isInitialized() && i == 0){
-                   initialisedInMethod.add(matcher.group(1));
-               }
-               varInfo.setInitialized();
-               listOfArgs.get(i).put(matcher.group(1), varInfo);
-               }catch (GeneralVariableException e){
+                   valueLegit(value, scope, varInfo.getType());
+                   if(!varInfo.isInitialized() && i == 0 && i != scope){
+                       initialisedInMethod.add(matcher.group(1));
+                   }
+                   varInfo.setInitialized();
+               }catch (Exception e){
                    throw new AssignVariableValueException(e.getMessage());
                }
            }
@@ -272,6 +275,16 @@ public class Variable{
             varInfo.deAssign();
         }
         initialisedInMethod.clear();
+    }
+
+    /**
+     * function returns true if the String is a legal name of a variable
+     * @param name - String
+     * @return true if yes, false if no
+     */
+    public static boolean isALegalVariableName(String name){
+        matcher = LEGIT_NAME_REGEX.matcher(name);
+        return matcher.matches();
     }
 
 }

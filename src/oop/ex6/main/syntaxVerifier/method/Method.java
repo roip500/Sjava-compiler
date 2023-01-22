@@ -21,6 +21,7 @@ public class Method {
     private static final String ERROR8 = "variable %s wasn't initialized";
     private static final String ERROR9 = "variable %s wasn't Final";
     private static final String ERROR10 = "variable %s type was incorrect";
+    private static final String ERROR11 = "variable %s doesn't exist";
 
     //global:
     private static final int SUCCESS = 0;
@@ -155,9 +156,11 @@ public class Method {
             if (info != null) {
                 checkInfoMatch(info, lstOfArgs.get(i));
             }
+            else if (Variable.isALegalVariableName(arg)){
+                throw new MethodVariablesException(String.format(ERROR11, arg));
+            }
             else if(!Variable.checkIfValueIsTheRightType(arg, lstOfArgs.get(i).getType())){
-                throw new MethodVariablesException(
-                        String.format("variable %s type was incorrect", lstOfArgs.get(i).getName()));
+                throw new MethodVariablesException(String.format(ERROR10, arg));
             }
         }
         return SUCCESS;
