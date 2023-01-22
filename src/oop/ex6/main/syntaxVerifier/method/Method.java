@@ -155,12 +155,9 @@ public class Method {
             if (info != null) {
                 checkInfoMatch(info, lstOfArgs.get(i));
             }
-            else {
-                try{
-                    Variable.checkIfValueIsTheRightType(arg, lstOfArgs.get(i).getType());
-                }catch (Exception e){
-                    throw new MethodVariablesException(e.getMessage());
-                }
+            else if(!Variable.checkIfValueIsTheRightType(arg, lstOfArgs.get(i).getType())){
+                throw new MethodVariablesException(
+                        String.format("variable %s type was incorrect", lstOfArgs.get(i).getName()));
             }
         }
         return SUCCESS;
