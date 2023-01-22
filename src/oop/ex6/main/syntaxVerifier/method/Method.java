@@ -39,6 +39,7 @@ public class Method {
             "String|double|char)\\s+([a-zA-Z]+\\w*|_\\w+)\\s*");
     private static final Pattern VARIABLES_PASSED_TO_METHOD_REGEX = Pattern.compile(
             "\\s*([a-zA-Z]\\w*)\\s*[(]((?:\\s*[\\+-]?[\\w\\.'\"]+\\s*,?)*)[)]\\s*;$");
+    private static final Pattern noArgumentsRegex = Pattern.compile("\\s*");
     // TODO: changed to support raw values at function calls
 
     //data-base:
@@ -63,11 +64,13 @@ public class Method {
         String argListWithParentheses = matcher.group(2);
         matcher = REMOVE_PARENTHESES_FROM_VAR_LIST.matcher(argListWithParentheses);
         if (!matcher.matches()) return false;
-        if (matcher.group(1) == null || matcher.group(1).isEmpty()) {
+        String args = matcher.group(1);
+        matcher = noArgumentsRegex.matcher(args);
+        if (matcher.matches()) {
             methods.put(methodName, null);
             return true;
         }
-        return parseArgList(methodName, matcher.group(1));
+        return parseArgList(methodName, args);
     }
 
     /**
