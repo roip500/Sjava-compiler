@@ -34,8 +34,8 @@ the tests we created:
 7 - checks legal if statement (must return 0)
 8 - checks the || sign in an if statement
 9 - checks the || and && sign in an if statement adn that the values given are legal
-10 - checks call to method with set values of type int, double and boolean
-11 - checks call to method with set values of type char and String
+10 - checks call to method with set values of all types
+11 - checks call to method with lots of spaces
 12 - checks call to method with a variable that isn't created
 13 - checks call to method in global scope (must return 1)
 14 - checks call to method with a cast from int type to boolean type

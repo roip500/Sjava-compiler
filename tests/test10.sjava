@@ -10,3 +10,11 @@ void foo2(){
     foo(true, -7.7, y);
     return;
 }
+
+void foo(char c, String s){
+    return;
+}
+void foo2(){
+    foo('c', "hello");
+    return;
+}

@@ -26,7 +26,7 @@ public class Method {
 
     //regex:
     private static final Pattern METHOD_DECLARATION_REGEX = Pattern.compile("^\\s*void\\s+([a-zA-Z]+" +
-            "\\w*)\\s*([(](?:\\s*(?:final\\s*)?\\w+\\s+\\w+,?)*\\s*[)])\\s*[{]$");
+            "\\w*)\\s*([(](?:\\s*(?:final\\s*)?\\w+\\s+\\w+\\s*,?)*\\s*[)])\\s*[{]$");
     private static final Pattern REMOVE_PARENTHESES_FROM_VAR_LIST = Pattern.compile("^[(](.*)[)]$");
     private static final Pattern ARG_DEC_LINE_REGEX = Pattern.compile("\\s*(final\\s+)?(int|boolean|" +
             "String|double|char)\\s+([a-zA-Z]+\\w*|_\\w+)\\s*");
