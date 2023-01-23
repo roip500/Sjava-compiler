@@ -27,12 +27,14 @@ public class Sjavac {
     private static final int SUCCESS = 0;
     private static final int FAILED = 1;
     private static final int ERROR = 2;
+    private static final int GLOBAL_SCOPE = 0;
 
     //regex string pattern:
     private static final String INVALID_FILE_ERR_MSG = "Invalid file name";
     private static final String BLANK_OR_COMMENT = "^//.*$|\\s*";
     private static final String END_OF_LINE_MODIFIERS = "^.*[;{}]$";
-    private static final String VAR_INITIALIZE_LINE = "^\\s*(final)?\\s*(?:int|double|String|boolean|char)\\s+.*;$";
+    private static final String VAR_INITIALIZE_LINE = "^\\s*(final)?\\s*(?:int|double|String|boolean|char)" +
+            "\\s+.*;$";
     private static final String VAR_ASSIGNMENT_LINE = "^\\s*[a-zA-Z_\\d]\\s*=\\s*.*?;$";
     private static final String METHOD_LINE = "^\\s*void.*[{]$";
 
@@ -88,7 +90,7 @@ public class Sjavac {
                 }
                 numOfLine++;
             }
-            if(scopeNum != 0){
+            if(scopeNum != GLOBAL_SCOPE){
                 System.err.println(ERROR9);
                 return FAILED;
             }
@@ -141,22 +143,22 @@ public class Sjavac {
             matcher = endOfScopeRegex.matcher(line);
             if (matcher.matches()) {
                 scopeNum--;
-                if (scopeNum < 0) throw new GeneralSJavaException(ERROR2);
+                if (scopeNum < GLOBAL_SCOPE) throw new GeneralSJavaException(ERROR2);
                 return SUCCESS;
             }
             matcher = ifWhileRegex.matcher(line);
             if (matcher.matches()) {
-                if (scopeNum > 0) {
+                if (scopeNum > GLOBAL_SCOPE) {
                     scopeNum++;
                     return SUCCESS;
                 }
                 throw new GeneralSJavaException(ERROR3);
             }
             matcher = returnStatementRegex.matcher(line);
-            if (matcher.matches() && scopeNum == 0) {
+            if (matcher.matches() && scopeNum == GLOBAL_SCOPE) {
                 throw new GeneralSJavaException(ERROR4);
             }
-            if (scopeNum > 0) return SUCCESS;
+            if (scopeNum > GLOBAL_SCOPE) return SUCCESS;
             matcher = methodRegex.matcher(line);
             if (matcher.matches()) {
                 scopeNum++;
@@ -215,12 +217,12 @@ public class Sjavac {
                     Variable.removeScope(scopeNum);
                     numOfInnerWhileOrIf--;
                     scopeNum--;
-                    if(scopeNum == 0) Variable.removeAssignmentsAtEndOfMethod();
+                    if(scopeNum == GLOBAL_SCOPE) Variable.removeAssignmentsAtEndOfMethod();
                     return SUCCESS;
                 }
                 throw new GeneralSJavaException(ERROR6);
             }
-            if (scopeNum != 0) {
+            if (scopeNum != GLOBAL_SCOPE) {
                 if (variableCheck(line)) {
                     return SUCCESS;
                 }

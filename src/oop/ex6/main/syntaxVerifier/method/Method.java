@@ -23,6 +23,14 @@ public class Method {
 
     //global:
     private static final int SUCCESS = 0;
+    private static final String VAR_SPLITTER = ",";
+    private static final int METHOD_NAME_GROUP = 1;
+    private static final int ARG_LIST_GROUP = 2;
+    private static final int NO_PARENTHESES_GROUP = 1;
+    private static final int VAR_NAME_GROUP = 3;
+    private static final int VAR_TYPE_GROUP = 2;
+    private static final int VAR_FINAL_GROUP = 1;
+
 
     //regex:
     private static final Pattern METHOD_DECLARATION_REGEX = Pattern.compile("^\\s*void\\s+([a-zA-Z]+" +
@@ -48,14 +56,14 @@ public class Method {
         if (!matcher.matches()) {
             throw new GeneralMethodException(ERROR1);
         }
-        String methodName = matcher.group(1);
+        String methodName = matcher.group(METHOD_NAME_GROUP);
         if (methods.containsKey(methodName)) {
             throw new MethodDeclarationException(ERROR2);
         }
-        String argListWithParentheses = matcher.group(2);
+        String argListWithParentheses = matcher.group(ARG_LIST_GROUP);
         matcher = REMOVE_PARENTHESES_FROM_VAR_LIST.matcher(argListWithParentheses);
         if (!matcher.matches()) return;
-        String args = matcher.group(1);
+        String args = matcher.group(NO_PARENTHESES_GROUP);
         matcher = noArgumentsRegex.matcher(args);
         if (matcher.matches()) {
             methods.put(methodName, null);
@@ -74,7 +82,7 @@ public class Method {
         ArrayList<VarInfo> argListAndTypeInfo = new ArrayList<>();
         argList = argList.trim();
         Matcher matcher;
-        String[] allGroups = argList.split(",");
+        String[] allGroups = argList.split(VAR_SPLITTER);
         for (String group : allGroups) {
             group = group.trim();
             matcher = ARG_DEC_LINE_REGEX.matcher(group);
@@ -82,12 +90,12 @@ public class Method {
                 throw new MethodVariablesException(ERROR3);
             }
             for (var info: argListAndTypeInfo) {
-                if(info.getName().equals(matcher.group(3))){
+                if(info.getName().equals(matcher.group(VAR_NAME_GROUP))){
                     throw new MethodVariablesException(ERROR2);
                 }
             }
-            VarInfo varInfo = new VarInfo(matcher.group(3), matcher.group(2),
-                    true, matcher.group(1) != null);
+            VarInfo varInfo = new VarInfo(matcher.group(VAR_NAME_GROUP), matcher.group(VAR_TYPE_GROUP),
+                    true, matcher.group(VAR_FINAL_GROUP) != null);
             argListAndTypeInfo.add(varInfo);
         }
         methods.put(methodName, argListAndTypeInfo);
@@ -120,7 +128,7 @@ public class Method {
         if (!matcher.matches()) {
             throw new GeneralMethodException(ERROR4);
         }
-        String methodName = matcher.group(1);
+        String methodName = matcher.group(METHOD_NAME_GROUP);
         Method.addArguments(methodName, scope);
         return true;
     }
@@ -137,11 +145,11 @@ public class Method {
         if (!matcher.matches()) {
             throw new GeneralMethodException(ERROR5);
         }
-        String name = matcher.group(1);
+        String name = matcher.group(METHOD_NAME_GROUP);
         if (!methods.containsKey(name)) {
             throw new MethodCalledException(ERROR6);
         }
-        String vars = matcher.group(2);
+        String vars = matcher.group(ARG_LIST_GROUP);
         var lstOfArgs = methods.get(name);
         if(lstOfArgs == null){
             matcher = noArgumentsRegex.matcher(vars);
@@ -149,7 +157,7 @@ public class Method {
             return SUCCESS;
         }
         int size = lstOfArgs.size();
-        String[] args = vars.split(",");
+        String[] args = vars.split(VAR_SPLITTER);
         if (args.length != size) {
             throw new MethodVariablesException(ERROR7);
         }

@@ -7,7 +7,7 @@ Our design for the ex' was the following:
    in scope 0) and makes a list of all the methods that were created in the file.
    the second read goes into the methods and checks that all the variables are used correctly,
    that the if\while statements are legal and that all the calls to and inside a method are legal.
-   if any check is false then an error is thrown. the class will catch the error and print to with
+   if any check is false then an error is thrown. the class will catch the error and print to err with
    the line where the error happened.
 2. We created 3 classes, each one checking the properties of its kind:
    a - Variables: holds a list of hashmaps where each cell in the list is a scope, and the
@@ -15,7 +15,8 @@ Our design for the ex' was the following:
                   and the value is a class called VarInfo which holds the information regarding the
                   variable). the class checks everything to do with the variables.
    b - Methods: holds a hashmap where the key is the name of the method and the value is the list of
-                variables the method needs to get.
+                variables the method needs to get. this class handles everything that has to do with methods,
+                handles both method declaration and method calls.
    c - WhileIf: checks that the if and while statements are legal and that the values given are legal
                 values.
    each class has its own class of exceptions that are designed so the message will be in a form of a
@@ -26,23 +27,23 @@ the tests we created:
 1 - checks the possibility of multiple variables with the same name but different
     scopes (must return 0)
 2 - checks correct call to method with global and inner variables (must return 0)
-3 - check that the while method can only be called in a method (must return 1)
+3 - check that the while statement can only be called in a method (must return 1)
 4 - checks call to method with a variable from the wrong type (must return 1)
 5 - checks that the global variable that is initialized after the method call is
     used inside the method (must return 0)
 6 - checks that boolean variable can be assigned by integer variable (must return 0)
 7 - checks legal if statement (must return 0)
-8 - checks the || sign in an if statement
-9 - checks the || and && sign in an if statement adn that the values given are legal
-10 - checks call to method with set values of all types
-11 - checks call to method with lots of spaces
-12 - checks call to method with a variable that isn't created
+8 - checks the || sign in an if statement (must return 0)
+9 - checks the || and && sign in an if statement and that the values given are legal (must return 0)
+10 - checks call to method with set values of all types (must return 0)
+11 - checks call to method with lots of spaces (must return 0)
+12 - checks call to method with a variable that isn't created (must return 1)
 13 - checks call to method in global scope (must return 1)
-14 - checks call to method with a cast from int type to boolean type
-15 - checks initialization of a few variable in the same line
-16 - checks assignment of a few variable in the same line
+14 - checks call to method with a cast from int type to boolean type (must return 0)
+15 - checks initialization of a few variable in the same line (must return 0)
+16 - checks assignment of a few variable in the same line (must return 0)
 17 - checks that 2 global variables can't have the same name (must return 1)
-18 - checks method with no return statement
+18 - checks method with no return statement (must return 1)
 19 - checks legal uses of Final variable (must return 0)
 20 - checks assignment to Final variable (must return 1)
 
@@ -61,7 +62,7 @@ the questions:
         will be added to the Variable class.
         the first step would be to clarify the legal way to write a value of such type, and that
         would allow us to write a regex that would be able to state whether or not the object fits
-        the type. the we will need to add a case to our function "checkIfValueIsTheRightType" which
+        the type. then we will need to add a case to our function "checkIfValueIsTheRightType" which
         is the only function that checks if a value is from a specific type.
         all the rest of the code is generic to the types of values so there is no need to change any
         of it.

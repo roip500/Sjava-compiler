@@ -14,6 +14,9 @@ public class WhileIf {
     private static final String ERROR3 = "parameter given isn't initialized";
     private static final String ERROR4 = "the parameter given type doesn't match the required type";
 
+    //constants
+    private static final int CONDITIONS_GROUP = 1;
+    private static final String CONDITIONS_SPLITTER = "\\|\\||&&";
 
     //general class objects:
     private static final String CHAR = "char";
@@ -35,7 +38,7 @@ public class WhileIf {
         if(!matcher.matches()){
             throw new GeneralWhileIfException(ERROR1);
         }
-        String [] args = matcher.group(1).split("\\|\\||&&");
+        String [] args = matcher.group(CONDITIONS_GROUP).split(CONDITIONS_SPLITTER);
         for(String arg : args){
             arg = arg.trim();
             if(checkGenericConditions(arg)) continue;

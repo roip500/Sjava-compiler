@@ -11,10 +11,10 @@ void foo2(){
     return;
 }
 
-void foo(char c, String s){
+void foo1(char c, String s){
     return;
 }
-void foo2(){
-    foo('c', "hello");
+void foo3(){
+    foo1('c', "hello");
     return;
 }

@@ -31,6 +31,13 @@ public class Variable{
     private static final HashSet<String> keyWords = new HashSet<>
             (Arrays.asList("int","double","String","boolean","char","void","final","if",
                     "while","true","false","return"));
+    //constants
+    private static final String TYPE_AND_FINAL_SPLITTER = "\\s";
+    private static final int TYPE_AND_FINAL_GROUPS = 2;
+    private static final String VAR_SPLITTER = ",";
+    private static final int GLOBAL_SCOPE = 0;
+    private static final int VALUE_GROUP = 2;
+    private static final int VAR_NAME_GROUP = 1;
 
     //pattern declaration:
     private static final Pattern VAR_WITH_INITIALIZE_REGEX = Pattern.compile(
@@ -60,15 +67,15 @@ public class Variable{
      * @param line  - String
      * @param scope - int represents the scope the variable is in
      */
-    public static void initializeVar(String line, int scope, boolean isFinal) throws GeneralVariableException {
+    public static void initializeVar(String line, int scope, boolean isFinal) throws GeneralVariableException{
         String newLine = line.trim();
-        String[] splitLine = newLine.split("\\s", 2);
+        String[] splitLine = newLine.split(TYPE_AND_FINAL_SPLITTER, TYPE_AND_FINAL_GROUPS);
         if(splitLine[0].equals(FINAL)){
             splitLine[1] = splitLine[1].trim();
-            splitLine = splitLine[1].split("\\s", 2);
+            splitLine = splitLine[1].split(TYPE_AND_FINAL_SPLITTER, TYPE_AND_FINAL_GROUPS);
         }
         String type = splitLine[0];
-        String[] allGroups = splitLine[1].split(",");
+        String[] allGroups = splitLine[1].split(VAR_SPLITTER);
         if(allGroups.length == 0){
             throw new GeneralVariableException(ERROR1);
         }
@@ -84,7 +91,7 @@ public class Variable{
             }
             matcher = VAR_WITH_INITIALIZE_REGEX.matcher(group);
             if(matcher.matches()){
-                String value = matcher.group(2).trim();
+                String value = matcher.group(TYPE_AND_FINAL_GROUPS).trim();
                 if(!listOfArgs.get(scope).containsKey(matcher.group(1))){
                     try {
                         valueLegit(value, scope, type);
@@ -128,7 +135,7 @@ public class Variable{
             throw new GeneralVariableException(ERROR4);
         }
         VarInfo varInfo = null;
-        for(int i =scope; i>-1; i--){
+        for(int i = scope; i > -1; i--){
             if (listOfArgs.get(i).containsKey(value)) {
                 varInfo = listOfArgs.get(i).get(value);
                 break;
@@ -219,7 +226,7 @@ public class Variable{
      */
     public static void assignVar(String line, int scope) throws GeneralVariableException {
         line = line.trim();
-        String[] groups = line.split(",");
+        String[] groups = line.split(VAR_SPLITTER);
         Matcher matcher;
         VarInfo varInfo = null;
         for(String group: groups){
@@ -235,7 +242,8 @@ public class Variable{
                }
                if (varInfo == null) throw new AssignVariableException(ERROR5);
                if (varInfo.isFinal()) throw new AssignVariableException(ERROR6);
-               String value = matcher.group(2);
+               String value = matcher.group(VALUE_GROUP);
+               String varName = matcher.group(VAR_NAME_GROUP);
                matcher = END_REGEX.matcher(value);
                if(matcher.matches()) {
                    if(matcher.group(1) == null) throw new GeneralVariableException(ERROR2);
@@ -244,7 +252,7 @@ public class Variable{
                try{
                    valueLegit(value, scope, varInfo.getType());
                    if(!varInfo.isInitialized() && i == 0 && i != scope){
-                       initialisedInMethod.add(matcher.group(1));
+                       initialisedInMethod.add(varName);
                    }
                    varInfo.setInitialized();
                }catch (Exception e){
@@ -307,7 +315,7 @@ public class Variable{
      */
     public static void removeAssignmentsAtEndOfMethod(){
         for (String varName : initialisedInMethod){
-            VarInfo varInfo = listOfArgs.get(0).get(varName);
+            VarInfo varInfo = listOfArgs.get(GLOBAL_SCOPE).get(varName);
             varInfo.deAssign();
         }
         initialisedInMethod.clear();
